@@ -4,6 +4,6 @@ variable "proxmox_host" {
 }
 
 variable "proxmox_api_token" {
-    description = "Proxmox API Token"
+    description = "Proxmox API credentials, should be in the format '<USER>@<REALM>!<TOKENID>=<UUID>'"
     type = string
 }

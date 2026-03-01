@@ -2,7 +2,7 @@
 
 ## 🚀 Home Lab Node 01 - Self-built NAS
 
-### 🏗️ Core System: CWWK / Topton Ryzen 8845HS
+### 🏗️ Core System: CWWK Ryzen 8845HS
 * Processor: AMD Ryzen 7 8845HS (8 Cores, 16 Threads) @ 5.1GHz Boost
 * Graphics: Integrated Radeon 780M
 * Networking: 4x Intel i226-V 2.5GbE Controllers (RJ45)
@@ -32,4 +32,4 @@
 * Automation: OpenTofu (via OPNsense & Proxmox Providers)
 
 ## Schema
-![homelab-setup](/homelab-setup.drawio.png)
+![homelab-setup](/documentation/images/homelab-setup.drawio.png)
