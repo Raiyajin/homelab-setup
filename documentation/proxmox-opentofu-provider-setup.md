@@ -1,4 +1,4 @@
-# Setting up the OpenTofu provider
+# Setting up the Proxmox OpenTofu provider
 
 This documentation explains how to set up the [bpg/proxmox](https://registry.terraform.io/providers/bpg/proxmox/latest/docs#when-is-ssh-required) provider for OpenTofu.
 

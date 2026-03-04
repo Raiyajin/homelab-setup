@@ -1,4 +1,4 @@
-# Setting up the Packer plugin
+# Setting up the Proxmox Packer plugin
 
 This documentation explains how to set up the [hashicorp/proxmox](https://github.com/hashicorp/proxmox) plugin for Packer.
 
