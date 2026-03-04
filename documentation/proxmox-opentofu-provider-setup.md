@@ -52,7 +52,7 @@ cat <<EOF >> ~/.ssh/authorized_keys
 EOF
 ```
 
-### Add the provider with the generated credentials
+### Add the provider
 Example of `providers.tf`:
 ```
 terraform {
@@ -65,12 +65,17 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = "https://<PROXMOX-IP>:8006/"
-  api_token = <TOKEN>
   insecure = false
   ssh {
     agent    = true
     username = "root"
   }
 }
+```
+
+We're using environment variables to initialize the provider, here's an example of a `.env` file for that purpose:
+```
+# OpenTofu environment variables
+PROXMOX_VE_ENDPOINT      = "https://<PROXMOX-IP>:8006/"
+PROXMOX_VE_API_TOKEN  = "opentofu-user@pve!opentofu=<TOKEN>"
 ```

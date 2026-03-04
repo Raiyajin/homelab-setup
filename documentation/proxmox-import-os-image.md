@@ -1,7 +1,7 @@
 # Download ISO Images on Proxmox
 
-## OPNSense Appliance
-Go over OPNSense official website: https://opnsense.org/download/
+## OPNsense Appliance
+Go over OPNsense official website: https://opnsense.org/download/
 
 Copy the download link of the latest *dvd* image type, in my case the `26.1.2` version:
 ![opnsense-iso-download](/documentation/images/opnsense-iso-download.png)
@@ -18,7 +18,7 @@ Then fill the parameters and hit download:
 - **URL**: the copied download link
 - **File name**: the file name to save to on the Proxmox host
 - **Hash algorithm**: The hash algorithm, for in my case `SHA-256`
-- **Checksum**: The key displayed on the OPNSense download page
+- **Checksum**: The key displayed on the OPNsense download page
 - **Decompression algorithm**: `BZIP2`
 ![proxmox-iso-download](/documentation/images/proxmox-iso-download.png)
 
