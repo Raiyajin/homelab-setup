@@ -2,7 +2,7 @@
 
 This documentation explains how to set up the [hashicorp/proxmox](https://github.com/hashicorp/proxmox) plugin for Packer.
 
-## Create an Packer user in Proxmox
+## Create a Packer user in Proxmox
 
 Connect into the Proxmox host:
 ```bash
@@ -11,11 +11,11 @@ Connect into the Proxmox host:
 Password: <PASSWORD>
 ```
 
-Create a user and assign the `PVEVMAdmin` role:
+Create a user and assign the `PVEAdmin` role:
 ```bash
 PASSWORD=<password>
 pveum user add packer-user@pve --password $PASSWORD \
-    && pveum aclmod / -user packer-user@pve -role PVEVMAdmin
+    && pveum aclmod / -user packer-user@pve -role PVEAdmin
 ```
 
 Finally, generate a token to use it on the proxmox plugin:
@@ -43,7 +43,7 @@ source "proxmox-iso" "opnsense_builder" {
 We're using environment variables to initialize the plugin, here's an example of a `.env` file for that purpose:
 ```
 # Packer environment variables
-PROXMOX_URL = "https://<PROXMOX-IP>:8006/"
+PROXMOX_URL = "https://<PROXMOX-IP>:8006/api2/json"
 PROXMOX_USERNAME = "packer-user@pve!packer="
 PROXMOX_TOKEN = <TOKEN>
 ```

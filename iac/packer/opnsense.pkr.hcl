@@ -9,10 +9,17 @@ packer {
 
 source "proxmox-iso" "opnsense_builder" {
   # Proxmox Connection
-  node        = "nas"
+  node                     = "nas"
+  insecure_skip_tls_verify = true
 
   # VM Specs for the build
-  vm_name              = "opnsense-template"
+  vm_name = "opnsense-template"
+  vm_id   = 10000
+  # Installer requires at least 3GB of RAM
+  memory   = 3072
+  cpu_type = "host"
+  cores    = 1
+  sockets  = 1
 
   template_description = "OPNsense Golden Image"
 
