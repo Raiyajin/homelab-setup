@@ -9,7 +9,7 @@ packer {
 
 source "proxmox-iso" "opnsense_builder" {
   # Proxmox Connection
-  node                     = "nas"
+  node                     = var.proxmox_node
   insecure_skip_tls_verify = true
 
   # VM Specs for the build
@@ -24,7 +24,7 @@ source "proxmox-iso" "opnsense_builder" {
   template_description = "OPNsense Golden Image"
 
   boot_iso {
-    iso_file = "local:iso/OPNsense-26.1.2-dvd-amd64.iso"
+    iso_file = "local:iso/OPNsense-${var.opnsense_version}-dvd-amd64.iso"
     unmount  = true
   }
 
@@ -109,7 +109,7 @@ source "proxmox-iso" "opnsense_builder" {
   ssh_password = "opnsense"
   ssh_timeout  = "15m"
 
-  tags = "opnsense;template"
+  tags = var.default_tags
 }
 
 build {
