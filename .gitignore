@@ -15,6 +15,7 @@ crash.log
 # subject to change depending on the environment.
 #
 *.pkrvars.hcl
+!opnsense.auto.pkrvars.hcl
 
 # For built boxes
 *.box
@@ -40,6 +41,7 @@ crash.*.log
 # to change depending on the environment.
 *.tfvars
 *.tfvars.json
+!opnsense.auto.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

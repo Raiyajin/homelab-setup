@@ -2,48 +2,53 @@ locals {
   linux_bridges = {
     # This bridge exist already as it was initialized for setting up proxmox
     vmbr0 = { ports = ["enp4s0"], mac_address = "BC:24:11:AA:BB:01", managed = false }
-    vmbr1 = { ports = ["enp5s0"], mac_address = "BC:24:11:AA:BB:02", managed = true  }
-    vmbr2 = { ports = ["enp6s0"], mac_address = "BC:24:11:AA:BB:03", managed = true  }
-    vmbr3 = { ports = ["enp7s0"], mac_address = "BC:24:11:AA:BB:04", managed = true  }
+    vmbr1 = { ports = ["enp5s0"], mac_address = "BC:24:11:AA:BB:02", managed = true }
+    vmbr2 = { ports = ["enp6s0"], mac_address = "BC:24:11:AA:BB:03", managed = true }
+    vmbr3 = { ports = ["enp7s0"], mac_address = "BC:24:11:AA:BB:04", managed = true }
   }
 }
 
 resource "proxmox_virtual_environment_network_linux_bridge" "linux_bridge" {
-  for_each = { for k, v in local.linux_bridges : k => v if v.managed }
-  node_name = "nas"
+  for_each  = { for k, v in local.linux_bridges : k => v if v.managed }
+  node_name = var.proxmox_node
   name      = each.key
   ports     = each.value.ports
 }
 
 resource "proxmox_virtual_environment_vm" "opnsense" {
   name      = "opnsense"
-  node_name = "nas"
+  node_name = var.proxmox_node
   vm_id     = 100
+
+  clone {
+    full  = true
+    vm_id = var.opnsense_template_id
+  }
 
   agent { enabled = true }
 
   startup {
-    order      = "1"
+    order = "1"
     # Wait time before starting/shutting down next VMs
     up_delay   = "60"
     down_delay = "60"
   }
 
-  cpu { 
+  cpu {
     cores = 2
     # enable cpu hardware acceleration
-    type = "host"
+    type  = "host"
     flags = ["+aes"]
   }
-  memory { 
-    dedicated = 4096 
+  memory {
+    dedicated = 4096
   }
 
   # Network interfaces
-  dynamic "network_device" { 
+  dynamic "network_device" {
     for_each = local.linux_bridges
     content {
-      bridge = network_device.key
+      bridge      = network_device.key
       mac_address = network_device.value.mac_address
       model       = "virtio"
     }
@@ -61,21 +66,17 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
     iothread     = true
   }
 
-  # Config Importer
-  disk {
-    datastore_id = "local"
-    interface    = "scsi1"
-    file_id      = proxmox_virtual_environment_file.config_disk_img.id
-  }
   # Attachment for the Installer ISO
   cdrom {
-    file_id   = "local:iso/OPNsense-26.1.2-dvd-amd64.iso"
+    file_id = "local:iso/OPNsense-${var.opnsense_version}-dvd-amd64.iso"
   }
 
   operating_system {
     # Linux Kernel 2.6 - 5.X.
     type = "l26"
   }
+
+  tags = var.default_tags
 }
 
 # # We use a map to define our nodes
@@ -90,7 +91,7 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
 # resource "proxmox_virtual_environment_vm" "k8s_nodes" {
 #   for_each  = local.nodes
 #   name      = each.key
-#   node_name = "nas"
+#   node_name = var.proxmox_node
 #   vm_id     = each.value.id
 
 #   cpu { cores = each.value.cpu, type = "x86-64-v4" }
