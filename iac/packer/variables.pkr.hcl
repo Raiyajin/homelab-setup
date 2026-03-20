@@ -17,22 +17,27 @@ variable "proxmox_node" {
 variable "wg_privkey" {
   type      = string
   sensitive = true
+  default   = ""
 }
 
 variable "wg_pubkey" {
   type    = string
+  default = ""
 }
 
 variable "wg_client_pubkey" {
   type    = string
+  default = ""
 }
 
 variable "opnsense_api_key" {
   type      = string
   sensitive = true
+  default   = ""
 }
 
 variable "opnsense_api_secret" {
   type      = string
   sensitive = true
+  default   = ""
 }

@@ -34,12 +34,14 @@
       <password>*</password> 
       <language>en_US</language>
       <shell>/sbin/nologin</shell>
-      <api>
-        <key uuid="${uuidv4()}">
-          <key>${opnsense_api_key}</key>
-          <secret>${opnsense_api_secret}</secret>
-        </key>
-      </api>
+      <!--
+        API key format reverse-engineered from OPNsense 26.1.2 config.xml export.
+        No official documentation exists for this format.
+        Format: <plaintext_key>|<sha512_hash_of_secret>
+        Hash is SHA-512 crypt ($6$) with empty salt
+        Note: verify this format still holds when upgrading OPNsense versions.
+      -->
+      <apikeys>${opnsense_api_key}|__API_SECRET_HASHED__</apikeys>
     </user>
     <timezone>Etc/UTC</timezone>
     <timeservers>0.opnsense.pool.ntp.org 1.opnsense.pool.ntp.org 2.opnsense.pool.ntp.org 3.opnsense.pool.ntp.org</timeservers>

@@ -118,11 +118,10 @@ build {
   # Use the 'file' provisioner with templatefile to inject sensible variables
   provisioner "file" {
     content = templatefile("config.xml.pkrtpl.hcl", {
-      wg_privkey          = var.wg_privkey,
-      wg_pubkey           = var.wg_pubkey,
-      wg_client_pubkey    = var.wg_client_pubkey,
-      opnsense_api_key    = var.opnsense_api_key,
-      opnsense_api_secret = var.opnsense_api_secret
+      wg_privkey       = var.wg_privkey,
+      wg_pubkey        = var.wg_pubkey,
+      wg_client_pubkey = var.wg_client_pubkey,
+      opnsense_api_key = var.opnsense_api_key,
     })
     destination = "/tmp/config.xml"
   }
@@ -131,7 +130,16 @@ build {
   provisioner "shell" {
     # force use of /bin/sh for setting env var https://developer.hashicorp.com/packer/docs/provisioners/shell#execute_command
     execute_command = "chmod +x {{ .Path }}; /bin/sh -c '{{ .Vars }} {{ .Path }}'"
+
+    environment_vars = [
+      "API_SECRET=${var.opnsense_api_secret}"
+    ]
     inline = [
+      # encrypt the given api secret and insert it into the config.xml file template
+      "SALT='$6$'",
+      "HASH=$(python3 -c \"import crypt; print(crypt.crypt('$API_SECRET', '$SALT'))\")",
+      "if [[ -n $API_SECRET ]]; then sed -i '' \"s|__API_SECRET_HASHED__|$HASH|g\" /tmp/config.xml; fi",
+      # move the config file so it is loaded on boot by opnsense
       "mv /tmp/config.xml /conf/config.xml",
       "chown root:wheel /conf/config.xml",
       "chmod 644 /conf/config.xml"
