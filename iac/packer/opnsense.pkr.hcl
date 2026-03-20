@@ -115,9 +115,15 @@ source "proxmox-iso" "opnsense_builder" {
 build {
   sources = ["source.proxmox-iso.opnsense_builder"]
 
-  # Upload the config.xml into the VM
+  # Use the 'file' provisioner with templatefile to inject sensible variables
   provisioner "file" {
-    source      = "config.xml"
+    content = templatefile("config.xml.pkrtpl.hcl", {
+      wg_privkey          = var.wg_privkey,
+      wg_pubkey           = var.wg_pubkey,
+      wg_client_pubkey    = var.wg_client_pubkey,
+      opnsense_api_key    = var.opnsense_api_key,
+      opnsense_api_secret = var.opnsense_api_secret
+    })
     destination = "/tmp/config.xml"
   }
 

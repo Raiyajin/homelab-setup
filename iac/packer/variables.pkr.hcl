@@ -13,3 +13,26 @@ variable "proxmox_node" {
   description = "Node to create the template into"
   type        = string
 }
+
+variable "wg_privkey" {
+  type      = string
+  sensitive = true
+}
+
+variable "wg_pubkey" {
+  type    = string
+}
+
+variable "wg_client_pubkey" {
+  type    = string
+}
+
+variable "opnsense_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "opnsense_api_secret" {
+  type      = string
+  sensitive = true
+}
