@@ -113,20 +113,6 @@
     </opt3>
     %{~ endif ~}
   </interfaces>
-  <dhcpd>
-    <lan>
-      <enable>1</enable>
-      <range><from>10.0.0.100</from><to>10.0.0.200</to></range>
-    </lan>
-    <opt1>
-      <enable>1</enable>
-      <range><from>10.0.10.100</from><to>10.0.10.200</to></range>
-    </opt1>
-    <opt2>
-      <enable>1</enable>
-      <range><from>10.0.20.100</from><to>10.0.20.200</to></range>
-    </opt2>
-  </dhcpd>
   <unbound>
     <enable>1</enable>
   </unbound>
@@ -173,8 +159,22 @@
         <address>10.1.0.0/24</address>
       </source>
       <destination>
-        <address>10.0.0.1</address>
+        <address>10.0.0.1/32</address>
         <port>443</port>
+      </destination>
+    </rule>
+
+    <rule>
+      <type>pass</type>
+      <interface>wireguard</interface>
+      <descr>Allow VPN to DNS</descr>
+      <protocol>tcp/udp</protocol>
+      <source>
+        <address>10.1.0.0/24</address>
+      </source>
+      <destination>
+        <address>10.0.0.1/32</address>
+        <port>53</port>
       </destination>
     </rule>
     %{~ endif ~}

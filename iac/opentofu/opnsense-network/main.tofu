@@ -78,36 +78,3 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
 
   tags = var.default_tags
 }
-
-# # We use a map to define our nodes
-# locals {
-#   nodes = {
-#     "k8s-cp-01"   = { id = 500, cpu = 2, mem = 4096 }
-#     "k8s-wk-01"   = { id = 501, cpu = 4, mem = 8192 }
-#     "k8s-wk-02"   = { id = 502, cpu = 4, mem = 8192 }
-#   }
-# }
-
-# resource "proxmox_virtual_environment_vm" "k8s_nodes" {
-#   for_each  = local.nodes
-#   name      = each.key
-#   node_name = var.proxmox_node
-#   vm_id     = each.value.id
-
-#   cpu { cores = each.value.cpu, type = "x86-64-v4" }
-#   memory { dedicated = each.value.mem }
-
-#   # K8s nodes sit in the DMZ bridge for MetalLB access
-#   network_device {
-#     bridge = "vmbr2"
-#   }
-
-#   # For K8s, Cloud-Init IS your friend.
-#   initialization {
-#     ip_config {
-#       ipv4 {
-#         address = "dhcp"
-#       }
-#     }
-#   }
-# }

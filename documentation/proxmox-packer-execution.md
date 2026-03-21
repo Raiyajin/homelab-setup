@@ -67,6 +67,7 @@ Then in your WireGuard configuration add the following file `wireguard-opnsense.
 [Interface]
 PrivateKey = "<content-of-client_private.key>"
 Address = 10.1.0.2/32
+DNS = 10.0.0.1
 
 [Peer]
 PublicKey = "<content-of-server_public.key>"
