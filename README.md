@@ -4,7 +4,9 @@
 
 ### 🏗️ Core System: CWWK Ryzen 8845HS
 * Processor: AMD Ryzen 7 8845HS (8 Cores, 16 Threads) @ 5.1GHz Boost
-* Graphics: Integrated Radeon 780M
+* Graphics: 
+    * Integrated Radeon 780M
+    * GIGABYTE GeForce RTX 4070 SUPER EAGLE OC 12G
 * Networking: 4x Intel i226-V 2.5GbE Controllers (RJ45)
  
 ### 📦 Case & Storage: Fractal Node 804
