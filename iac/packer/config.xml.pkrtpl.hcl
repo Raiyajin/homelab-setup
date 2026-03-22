@@ -13,7 +13,7 @@
       <description>System Administrators</description>
       <scope>system</scope>
       <gid>1999</gid>
-      <member>0</member>
+      <member>0,1001</member>
       <priv>page-all</priv>
     </group>
     <user>
@@ -187,6 +187,19 @@
   </ntpd>
   %{~ if wg_privkey != "" ~}
   <OPNsense>
+    <Kea>
+    <Kea>
+      <dhcp4 version="1.0.4" description="Kea DHCPV4 configuration">
+        <general>
+          <enabled>1</enabled>
+          <manual_conf ig>0</manual_conf ig>
+          <interfaces>lan,opt1,opt2</interfaces>
+          <valid_lifetime>3600</valid_lifetime>
+          <fwrules>1</fwrules>
+          <dhcp_socket_type>raw</dhcp_socket_type>
+        </general>
+      </dhcp4>
+    </Kea>
     <wireguard>
       <general version="0.0.1">
         <enabled>1</enabled>

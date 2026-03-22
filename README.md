@@ -8,7 +8,7 @@
     * Integrated Radeon 780M
     * GIGABYTE GeForce RTX 4070 SUPER EAGLE OC 12G
 * Networking: 4x Intel i226-V 2.5GbE Controllers (RJ45)
- 
+
 ### 📦 Case & Storage: Fractal Node 804
 * Case: Fractal Design Node 804 (Dual-chamber Micro-ATX design)
 * Total Capacity: ~26TB (Target)
