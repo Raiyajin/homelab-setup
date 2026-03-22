@@ -77,7 +77,7 @@ Endpoint = <WAN-IP>:51820
 
 On Windows import the file and activate it
 
-![windows-wireguard-config](wireguard-config.png)
+![windows-wireguard-config](./images/wireguard-config.png)
 
 On Linux move the file into the `/etc/wireguard` directory and then:
 ```bash
