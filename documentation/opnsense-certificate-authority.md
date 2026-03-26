@@ -88,3 +88,13 @@ Finally paste/upload both the certificate and private key, click upload, wait a 
 
 To verify that the certificate is working, you need to have the internal CA installed on your local computer, then open the Proxmox GUI on a private tab (to avoid ignore browser cache).
 
+## Bonus: "Create" DNS Entries in OPNsense
+
+Since we're talking about certificate and DNS alias names, you may like to know that it's possible to "create" (actually override) DNS entries, only resolvable privately though.
+
+Its possible using [Unbound DNS](https://docs.opnsense.org/manual/unbound.html) which is installed by default with OPNsense.
+
+To override a DNS entry go to "Services" > "Unbound DNS" > "Overrides".
+
+Click on the [+] "add" button and fill out the form, know that "Host", correspond to the latest leftmost part of the domain url:
+> [HOST].[DOMAIN-NAME]
