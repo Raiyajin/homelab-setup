@@ -36,6 +36,7 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
 
   cpu {
     cores = 2
+    sockets = 1
     # enable cpu hardware acceleration
     type  = "host"
     flags = ["+aes"]
