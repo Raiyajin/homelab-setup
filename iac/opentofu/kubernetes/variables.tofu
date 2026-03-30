@@ -10,6 +10,12 @@ variable "kubernetes_version" {
   default     = "1.35.0"
 }
 
+variable "cluster_name" {
+  description = "Kubernetes Cluster name"
+  type        = string
+  default     = "kubernetes"
+}
+
 variable "talos_install_image" {
   description = "The talos install image, when updated upgrade the talos machine version"
   type        = string

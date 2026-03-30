@@ -14,24 +14,24 @@ locals {
       mem       = 4096,
       role      = "controlplane"
     }
-    "k8s-wk-01" = {
-      id        = 550,
-      node_name = "nas",
-      # GPU mapping name
-      gpu  = { mapping = "rtx4070" }
-      cpu  = { cores = 4, sockets = 1 },
-      mem  = 8192,
-      role = "worker"
-    }
-    "k8s-wk-02" = {
-      id        = 551,
-      node_name = "nas",
-      cpu       = { cores = 2, sockets = 1 },
-      mem       = 8192,
-      role      = "worker"
-    }
+    # "k8s-wk-01" = {
+    #   id        = 550,
+    #   node_name = "nas",
+    #   # GPU mapping name
+    #   gpu  = { mapping = "rtx4070" }
+    #   cpu  = { cores = 4, sockets = 1 },
+    #   mem  = 8192,
+    #   role = "worker"
+    # }
+    # "k8s-wk-02" = {
+    #   id        = 551,
+    #   node_name = "nas",
+    #   cpu       = { cores = 2, sockets = 1 },
+    #   mem       = 8192,
+    #   role      = "worker"
+    # }
   }
-  config_patches = yamlencode({
+  config_patches = [yamlencode({
     # Remove default CNI (flannel) and kube-proxy
     cluster = {
       network = {
@@ -66,8 +66,13 @@ locals {
         ]
       }
       sysctls = {
-        "net.core.bpf_jit_harden" = 1
+        "net.core.bpf_jit_harden"            = 1
+        "net.ipv6.conf.all.disable_ipv6"     = "1"
+        "net.ipv6.conf.default.disable_ipv6" = "1"
+        "net.ipv6.conf.lo.disable_ipv6"      = "1"
       }
     }
-  })
+  })]
+
+  bootstrapped_controlplane_ip = flatten(proxmox_virtual_environment_vm.kubernetes["k8s-cp-01"].ipv4_addresses)
 }
