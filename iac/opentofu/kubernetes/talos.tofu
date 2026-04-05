@@ -155,6 +155,21 @@ data "talos_machine_configuration" "configuration" {
           status: {}
           ---
           ${data.helm_template.argocd.manifest}
+          ---
+          apiVersion: v1
+          kind: Secret
+          type: Opaque
+          metadata:
+            annotations:
+              managed-by: argocd.argoproj.io
+            labels:
+              argocd.argoproj.io/secret-type: repository
+            name: repo-github-homelab-setup
+            namespace: argocd
+          data:
+            project: ${base64encode("default")}
+            type: ${base64encode("git")}
+            url: ${base64encode(var.github_repository)}
           EOT
         }
       ]

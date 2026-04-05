@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/terraform,packer
-# Edit at https://www.toptal.com/developers/gitignore?templates=terraform,packer
+# Created by https://www.toptal.com/developers/gitignore/api/terraform,packer,helm
+# Edit at https://www.toptal.com/developers/gitignore?templates=terraform,packer,helm
 
 ### Packer ###
 # Cache objects
@@ -60,6 +60,10 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# End of https://www.toptal.com/developers/gitignore/api/terraform,packer
+### Helm ###
+# Chart dependencies
+**/charts/*.tgz
+
+# End of https://www.toptal.com/developers/gitignore/api/terraform,packer,helm
 
 .env

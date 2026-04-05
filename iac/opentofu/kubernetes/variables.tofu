@@ -15,3 +15,8 @@ variable "cluster_name" {
   type        = string
   default     = "kubernetes"
 }
+
+variable "github_repository" {
+  description = "Public github repository https address to use for argo cd"
+  type = string
+}
