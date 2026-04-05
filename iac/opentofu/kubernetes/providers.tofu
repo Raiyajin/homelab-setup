@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "proxmox" {
-  insecure = true
+  insecure = false
   ssh {
     agent    = true
     username = "root"

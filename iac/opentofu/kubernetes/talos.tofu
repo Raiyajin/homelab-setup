@@ -34,10 +34,6 @@ data "helm_template" "cilium" {
       value = "7445"
     },
     {
-      name  = "kubeProxyReplacement"
-      value = "true"
-    },
-    {
       name = "securityContext.capabilities.ciliumAgent"
       value = "{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
     },
