@@ -188,7 +188,6 @@
   %{~ if wg_privkey != "" ~}
   <OPNsense>
     <Kea>
-    <Kea>
       <dhcp4 version="1.0.4" description="Kea DHCPV4 configuration">
         <general>
           <enabled>1</enabled>
