@@ -1,0 +1,57 @@
+{{- range $name, $apps := .Values.apps }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $name }}
+  namespace: argocd
+  {{- if $apps.finalizer | default $.Values.defaults.finalizer }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- end }}
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: .;..
+spec:
+  project: {{ $apps.project | default $.Values.defaults.project }}
+  source:
+    {{ if $apps.repoURL }}
+    repoURL: {{ $apps.repoURL }}
+    {{- else }}
+    repoURL: {{ $.Values.repoURL }}
+    {{- end }}
+    {{- if $apps.path }}
+    path: {{ $apps.path }}
+    {{- else }}
+    path: charts/{{ $name }}
+    {{- end }}
+    {{ if $apps.targetRevision }}
+    targetRevision: {{ $apps.targetRevision }}
+    {{- else }}
+    targetRevision: main
+    {{- end }}
+    {{- if eq ($apps.type | default $.Values.defaults.type) "directory" }}
+    directory:
+      jsonnet: {}
+      recurse: true
+    {{- else }}
+    helm:
+      valueFiles:
+        - values.yaml
+      ignoreMissingValueFiles: true
+    {{- end }}
+  destination:
+    server: {{ $.Values.cluster }}
+    namespace: {{ $apps.namespace }}
+  syncPolicy:
+    {{- if $apps.syncPolicy }}
+    {{- toYaml $apps.syncPolicy | nindent 4 }}
+    {{- else }}
+    {{- toYaml $.Values.defaults.syncPolicy | nindent 4 }}
+    {{- end }}
+  ignoreDifferences:
+    {{- if $apps.ignoreDifferences }}
+    {{- toYaml $apps.ignoreDifferences | nindent 4 }}
+    {{- else }}
+    {{- toYaml $.Values.defaults.ignoreDifferences | nindent 4 }}
+    {{- end }}
+---
+{{- end }}
