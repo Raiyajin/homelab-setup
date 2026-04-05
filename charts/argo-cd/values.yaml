@@ -3,7 +3,7 @@ global:
   domain: argocd.platform.internal
 
 
-repoURL: https://github.com/Raiyajin/homelab-charts.git
+repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 projects:
   infrastructure:
@@ -12,7 +12,6 @@ projects:
     namespace: '!kube-system'
 
 argo-cd:
-
   server:
     resources:
       limits:
@@ -85,8 +84,3 @@ argo-cd:
       requests:
         cpu: 1000m
         memory: 1Gi
-
-  notifications:
-    enabled: false
-  applicationSet:
-    enabled: false
