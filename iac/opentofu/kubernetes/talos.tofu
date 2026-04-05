@@ -53,7 +53,7 @@ data "helm_template" "cilium" {
 }
 
 data "helm_template" "argocd" {
-  name       = "argo"
+  name       = "argo-cd"
   repository = "https://argoproj.github.io/argo-helm/"
   chart      = "argo-cd"
   namespace  = "argocd"
