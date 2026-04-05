@@ -52,6 +52,22 @@ data "helm_template" "cilium" {
   ]
 }
 
+data "helm_template" "argocd" {
+  name       = "argo"
+  repository = "https://argoproj.github.io/argo-helm/"
+  chart      = "argo-cd"
+  namespace  = "argocd"
+  version    = "9.4.17"
+  kube_version = var.kubernetes_version
+
+  set = [
+    { name = "global.domain"
+      value = "argocd.platform.internal"
+    },
+  ]
+}
+
+
 ########################################
 #             TALOS IMAGE              #
 ########################################
@@ -127,6 +143,19 @@ data "talos_machine_configuration" "configuration" {
         {
           name     = "cilium"
           contents = data.helm_template.cilium.manifest
+        },
+        {
+          name     = "argocd"
+          contents = <<-EOT
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: ${data.helm_template.argocd.namespace}
+          spec: {}
+          status: {}
+          ---
+          ${data.helm_template.argocd.manifest}
+          EOT
         }
       ]
     }

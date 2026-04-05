@@ -1,0 +1,22 @@
+apps:
+  argo-cd:
+    namespace: argocd
+    project: default
+
+
+repoURL: https://github.com/Raiyajin/homelab-setup.git
+
+defaults:
+  type: helm
+  project: default
+  finalizer: false
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences: []
+
+cluster: "https://kubernetes.default.svc"

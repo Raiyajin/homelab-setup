@@ -1,0 +1,9 @@
+apiVersion: v2
+name: app-of-apps
+description: A Helm chart for managing ArgoCD applications
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1.0"

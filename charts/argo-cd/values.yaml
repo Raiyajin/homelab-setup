@@ -1,0 +1,92 @@
+# Default values: https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml
+global:
+  domain: argocd.platform.internal
+
+
+repoURL: https://github.com/Raiyajin/homelab-charts.git
+
+projects:
+  infrastructure:
+    namespace: '*'
+  apps:
+    namespace: '!kube-system'
+
+argo-cd:
+
+  server:
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+
+    # Argo CD server ingress configuration
+    # ingress:
+    #   # -- Enable an ingress resource for the Argo CD server
+    #   enabled: true
+    #   # -- Specific implementation for ingress controller. One of `generic`, `aws` or `gke`
+    #   ## Additional configuration might be required in related configuration sections
+    #   controller: generic
+    #   # -- Additional ingress annotations
+    #   ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-1-ssl-passthrough
+    #   annotations:
+    #     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    #     external-dns.alpha.kubernetes.io/hostname: "argocd.internal.lmo-software.fr"
+    #     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    #     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+
+    #   # -- Defines which ingress controller will implement the resource
+    #   ingressClassName: "internal-nginx"
+
+    #   # -- The path to Argo CD server
+    #   path: /
+
+    #   # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
+    #   pathType: Prefix
+
+    #   # -- Enable TLS configuration for the hostname defined at `server.ingress.hostname`
+    #   ## TLS certificate will be retrieved from a TLS secret `argocd-server-tls`
+    #   ## You can create this secret via `certificate` or `certificateSecret` option
+    #   tls: true
+
+  controller:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+
+  redis:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+
+  dex:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+
+  repoServer:
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+
+  notifications:
+    enabled: false
+  applicationSet:
+    enabled: false
