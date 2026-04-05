@@ -8,6 +8,16 @@ resource "proxmox_virtual_environment_storage_lvmthin" "kubernetes" {
   content = ["images"]
 }
 
+resource "proxmox_virtual_environment_download_file" "talos_boot_image" {
+  node_name    = "nas"
+
+  content_type = "iso"
+  datastore_id = "local"
+  
+  url = data.talos_image_factory_urls.this["base"].urls.iso_secureboot
+  file_name = "metal-amd64-secureboot.iso"
+}
+
 resource "proxmox_virtual_environment_vm" "kubernetes" {
   for_each  = local.vm_nodes
   name      = each.key
@@ -20,6 +30,8 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
       ipv4 = true
     }
   }
+
+  boot_order = ["scsi0", "ide3"]
 
   startup {
     order = "2"
@@ -54,15 +66,18 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
     type    = "x86-64-v4"
   }
   memory {
-    dedicated = each.value.mem
+    dedicated = each.value.memory
   }
 
   dynamic "network_device" {
-    for_each = local.network_interfaces
+    # Only take the first interface if it's a controlplane
+    for_each = each.value.role == "controlplane" ? [local.network_interfaces[0]] : local.network_interfaces
+    
     content {
-      bridge      = network_device.key
-      mac_address = network_device.value.mac_address
+      bridge      = network_device.value.bridge
+      # mac_address = network_device.value.mac_address
       model       = "virtio"
+      firewall = false
     }
   }
 
@@ -81,7 +96,7 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
   disk {
     datastore_id = proxmox_virtual_environment_storage_lvmthin.kubernetes.id
     size         = 5000
-    interface    = "scsi0"
+    interface    = "scsi1"
     file_format  = "raw"
     ssd          = false
     iothread     = true
@@ -89,7 +104,8 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
 
   # Attachment for the Installer ISO
   cdrom {
-    file_id = "local:iso/metal-amd64.iso"
+    file_id = proxmox_virtual_environment_download_file.talos_boot_image.id
+    interface = "ide3"
   }
 
   operating_system {

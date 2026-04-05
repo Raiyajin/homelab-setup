@@ -8,6 +8,10 @@ terraform {
       source  = "siderolabs/talos"
       version = "0.10.1"
     }
+    helm = {
+      source = "helm"
+      version = "3.1.1"
+    }
   }
 }
 
