@@ -87,7 +87,7 @@ resource "opnsense_firewall_filter" "dmz" {
     }
 
     destination = {
-      net  = local.dhcp_subnets["lan"].subnet_cidr
+      net  = "${cidrhost(local.dhcp_subnets["dmz"].subnet_cidr, 1)}/32",
       port = each.value.port
     }
 
