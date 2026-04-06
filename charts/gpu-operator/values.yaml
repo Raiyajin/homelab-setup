@@ -1,0 +1,15 @@
+nvidia-gpu-operator:
+  # Pre-installed on the node by Talos
+  driver:
+    enabled: false
+  toolkit:
+    enabled: false
+
+  devicePlugin:
+    enabled: true
+  # Metrics exporter
+  dcgmExporter:
+    enabled: false
+  # Automatic node labelling
+  node-feature-discovery:
+    enabled: true
