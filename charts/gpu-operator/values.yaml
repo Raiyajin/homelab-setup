@@ -19,3 +19,12 @@ nvidia-gpu-operator:
   # Automatic node labelling
   node-feature-discovery:
     enabled: true
+    
+    worker:
+      config:
+        sources:
+          system:
+            osRelease:
+              # Exclude VERSION_ID from being published
+              attributeBlacklist:
+                - VERSION_ID
