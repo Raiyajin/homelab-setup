@@ -15,40 +15,47 @@ data "helm_template" "cilium" {
   version = "v1.19.2"
   kube_version = var.kubernetes_version
 
-  set = [
-    {
-      name = "ipam.mode"
-      value = "kubernetes"
-    },
-    # disable kube-proxy and use host IP to reach Kubernetes API
-    {
-        name  = "kubeProxyReplacement"
-        value = "true"
-    },
-    {
-    name  = "k8sServiceHost"
-    value = "localhost"
-    },
-    {
-      name  = "k8sServicePort"
-      value = "7445"
-    },
-    {
-      name = "securityContext.capabilities.ciliumAgent"
-      value = "{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-    },
-    {
-      name = "securityContext.capabilities.cleanCiliumState"
-      value = "{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-    },
-    {
-      name = "cgroup.autoMount.enabled"
-      value = "false"
-    },
-    {
-      name = "cgroup.hostRoot"
-      value = "/sys/fs/cgroup"
-    }
+  values = [
+  <<-EOT
+  ipam:
+    mode: kubernetes
+
+  kubeProxyReplacement: true
+  k8sServiceHost: localhost
+  k8sServicePort: 7445
+  
+  securityContext:
+    capabilities:
+      ciliumAgent:
+        - BPF
+        - CHOWN
+        - KILL
+        - NET_ADMIN
+        - NET_RAW
+        - IPC_LOCK
+        - SYS_ADMIN
+        - SYS_RESOURCE
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETGID
+        - SETUID
+      cleanCiliumState: 
+        - NET_ADMIN
+        - SYS_ADMIN
+        - SYS_RESOURCE
+  cgroup:
+    autoMount: 
+      enabled: false
+    hostRoot: "/sys/fs/cgroup"
+
+  gatewayAPI:
+    enabled: true
+    hostNetwork:
+      enabled: false
+
+  l2announcements:
+    enabled: true
+  EOT
   ]
 }
 
