@@ -212,6 +212,24 @@ data "talos_machine_configuration" "configuration" {
           { name = "nvidia_modeset" }
         ] : []
       }
+      files = lookup(each.value, "gpu", null) != null ? [
+        {
+          content = <<-EOT
+            [plugins]
+              [plugins."io.containerd.grpc.v1.cri"]
+                [plugins."io.containerd.grpc.v1.cri".containerd]
+                  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+                    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+                      privileged_without_host_devices = false
+                      runtime_type = "io.containerd.runc.v2"
+                      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+                        BinaryName = "/usr/bin/nvidia-container-runtime"
+          EOT
+          path        = "/var/cri/conf.d/20-nvidia.toml"
+          op          = "create"
+          permissions = 0
+        }
+      ] : []
 
       sysctls = {
         "net.core.bpf_jit_harden"            = 1
