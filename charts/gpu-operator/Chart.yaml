@@ -9,6 +9,7 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-  - name: nvidia-gpu-operator
+  - name: gpu-operator
+    alias: nvidia-gpu-operator
     repository: https://helm.ngc.nvidia.com/nvidia
     version: 26.3.0
