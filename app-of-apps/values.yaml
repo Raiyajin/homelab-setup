@@ -3,6 +3,10 @@ apps:
     namespace: argocd
     project: default
 
+  cilium:
+    namespace: kube-system
+    project: infrastructure
+
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
