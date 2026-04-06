@@ -14,7 +14,16 @@ apps:
   gpu-operator:
     namespace: gpu-operator
     project: infrastructure
-
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          pod-security.kubernetes.io/enforce: privileged
+      syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
