@@ -7,6 +7,10 @@ apps:
     namespace: kube-system
     project: infrastructure
 
+  metrics-server:
+    namespace: kube-system
+    project: infrastructure
+
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 

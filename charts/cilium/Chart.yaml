@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cilium
-description: A Helm chart for Kubernetes
+description: eBPF-based Networking, Security, and Observability
 
 type: application
 
