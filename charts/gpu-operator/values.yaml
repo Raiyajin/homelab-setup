@@ -5,6 +5,9 @@ nvidia-gpu-operator:
   toolkit:
     enabled: false
 
+  hostPaths:
+    driverInstallDir: "/usr/local/glibc/usr/lib/"
+
   validator:
     driver:
       env:
