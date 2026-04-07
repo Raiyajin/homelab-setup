@@ -10,6 +10,8 @@ nvidia-gpu-operator:
       env:
         - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
           value: "true"
+        - name: WITH_WAIT
+          value: "false"
 
   devicePlugin:
     enabled: true
@@ -20,8 +22,7 @@ nvidia-gpu-operator:
   node-feature-discovery:
     enabled: true
 
-    worker:
+    master:
       config:
-        core:
-          # exclude 'system-os_release.VERSION_ID'
-          labelWhiteList: "^(?!system-os_release.VERSION_ID$).*"
+        extraLabelNs: ["feature.node.kubernetes.io", "nvidia.com"]
+        labelWhiteList: '^(cpu|memory|gpu|pci|kernel|storage|nvidia\.com|system-os_release\.ID).*'
