@@ -56,7 +56,8 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
       device  = "hostpci0"
       mapping = hostpci.value
       pcie    = true
-      xvga    = true
+      xvga    = false
+      rombar  = true
     }
   }
 
@@ -64,6 +65,15 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
     cores   = each.value.cpu.cores
     sockets = each.value.cpu.sockets
     type    = "x86-64-v4"
+
+    flags = [
+      # 1GB Hugepages
+      "+pdpe1gb",
+      # Hardware Encryption
+      "+aes",
+      # Speculative Store Bypass Disable
+      "+virt-ssbd"
+    ]
   }
   memory {
     dedicated = each.value.memory

@@ -223,7 +223,7 @@ data "talos_machine_configuration" "configuration" {
                       privileged_without_host_devices = false
                       runtime_type = "io.containerd.runc.v2"
                       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-                        BinaryName = "/usr/bin/nvidia-container-runtime"
+                        BinaryName = "/usr/local/bin/nvidia-container-runtime"
           EOT
           path        = "/var/cri/conf.d/20-nvidia.toml"
           op          = "create"
@@ -232,7 +232,7 @@ data "talos_machine_configuration" "configuration" {
       ] : []
 
       sysctls = {
-        "net.core.bpf_jit_harden"            = 1
+        "net.core.bpf_jit_harden"            = "1"
         "net.ipv6.conf.all.disable_ipv6"     = "1"
         "net.ipv6.conf.default.disable_ipv6" = "1"
         "net.ipv6.conf.lo.disable_ipv6"      = "1"
