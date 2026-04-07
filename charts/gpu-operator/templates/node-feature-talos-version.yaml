@@ -1,0 +1,15 @@
+apiVersion: nfd.k8s-sigs.io/v1alpha1
+kind: NodeFeatureRule
+metadata:
+  name: talos-os-version
+  namespace: gpu-operator
+spec:
+  rules:
+    - name: "talos-version-id"
+      labels:
+        "feature.node.kubernetes.io/system-os_release.VERSION_ID": "1.12.6"
+        "feature.node.kubernetes.io/system-os_release.ID": "talos"
+      matchFeatures:
+        - feature: pci.device
+          matchExpressions:
+            vendor: {op: In, value: ["10de"]}
