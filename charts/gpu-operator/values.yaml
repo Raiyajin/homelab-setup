@@ -22,7 +22,7 @@ nvidia-gpu-operator:
   node-feature-discovery:
     enabled: true
 
-    master:
+    worker:
       config:
-        extraLabelNs: ["feature.node.kubernetes.io", "nvidia.com"]
-        labelWhiteList: '^(cpu|memory|gpu|pci|kernel|storage|nvidia\.com|system-os_release\.ID).*'
+        core:
+          sources: [cpu, pci, kernel, usb, storage]
