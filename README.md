@@ -21,12 +21,13 @@
 * Primary Switch: TP-Link Unmanaged 8-Port 2.5G (TL-SG108-M2)
 
 ### 🌐 Logical Network Mapping
-|Physical Port|Interface (OS)|Color |Assignment        |Destination      |
-|-------------|--------------|------|------------------|-----------------|
-|Port 1       |enp4s0        |Blue  |WAN / Proxmox MGMT|ISP Router (1G)  |
-|Port 2       |enp5s0        |Yellow|LAN (High Speed)  |2.5G Switch      |
-|Port 3       |enp6s0        |Red   |DMZ / Guest       |2.5G Switch      |
-|Port 4       |enp7s0        |Black |Direct Link / PC  |Workstation PC   |
+| Physical Port | Interface (OS) | Color | Assignment         | Destination       |
+|---------------|----------------|-------|--------------------|-------------------|
+| Port 1        | enp4s0         | White | WAN / Proxmox MGMT | ISP Router (2.5G) |
+| Port 2        | enp5s0         | Blue  | LAN (High Speed)   | 1G Switch         |
+| Port 3        | enp6s0         | Red   | Wifi Access Point  | Access Point      |
+| Port 4        | enp7s0         | Black | Direct Link / PC   | Workstation PC    |
+| N/A           | Virtual        | N/A   | Insecure           | Internal Only     |
 
 ### 🛠️ Software Stack
 * Hypervisor: Proxmox VE (Debian-based)
