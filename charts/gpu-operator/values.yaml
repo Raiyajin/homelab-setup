@@ -9,10 +9,6 @@ nvidia-gpu-operator:
     driverInstallDir: "/usr/local/glibc/usr/lib/"
 
   validator:
-    env:
-    - name: PATH
-      value: "/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin"
-
     driver:
       env:
         - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
