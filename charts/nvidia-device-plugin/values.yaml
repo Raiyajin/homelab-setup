@@ -1,4 +1,4 @@
-nvidia-device-plugin:
+nvdp:
   gfd:
     enabled: true
 
