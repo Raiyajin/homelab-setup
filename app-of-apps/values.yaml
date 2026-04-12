@@ -11,8 +11,22 @@ apps:
     namespace: kube-system
     project: infrastructure
 
-  gpu-operator:
-    namespace: gpu-operator
+  # gpu-operator:
+  #   namespace: gpu-operator
+  #   project: infrastructure
+  #   syncPolicy:
+  #     automated:
+  #       prune: true
+  #       selfHeal: true
+  #     managedNamespaceMetadata:
+  #       labels:
+  #         pod-security.kubernetes.io/enforce: privileged
+  #     syncOptions:
+  #       - CreateNamespace=true
+  #       - RespectIgnoreDifferences=true
+
+  nvidia-device-plugin:
+    namespace: nvidia-device-plugin
     project: infrastructure
     syncPolicy:
       automated:
@@ -24,6 +38,7 @@ apps:
       syncOptions:
         - CreateNamespace=true
         - RespectIgnoreDifferences=true
+
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
