@@ -3,6 +3,7 @@ nvidia-device-plugin:
     enabled: true
 
   deviceDiscoveryStrategy: "nvml"
+  nvidiaDriverRoot: "/usr/local/glibc/usr/lib/"
 
   securityContext:
     capabilities:
