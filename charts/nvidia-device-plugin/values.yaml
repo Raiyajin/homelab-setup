@@ -3,6 +3,11 @@ nvidia-device-plugin:
     enabled: true
 
   deviceDiscoveryStrategy: "nvml"
+
+  securityContext:
+    capabilities:
+      add:
+        - SYS_ADMIN
 #   nfd:
 #   enabled: true
 
