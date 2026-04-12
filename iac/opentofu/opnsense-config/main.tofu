@@ -1,35 +1,75 @@
 
 locals {
   dhcp_subnets = {
-    "lan": {
+    "lan" : {
       subnet_cidr = "10.0.0.0/24"
       pools = [
         "10.0.0.100 - 10.0.0.200"
       ]
       description = "LAN"
-      interface = "lan"
+      interface   = "lan"
     }
-    "dmz": {
+    "dmz" : {
       subnet_cidr = "10.0.10.0/24"
       pools = [
         "10.0.10.100 - 10.0.10.200"
       ]
       description = "DMZ"
-      interface = "opt1"
+      interface   = "opt1"
 
     }
-    "pc_isolated": {
+    "pc_isolated" : {
       subnet_cidr = "10.0.20.0/24"
       pools = [
         "10.0.20.100 - 10.0.20.200"
       ]
       description = "PC"
-      interface = "opt2"
+      interface   = "opt2"
     }
-    "wireguard": {
+    "wireguard" : {
       subnet_cidr = "10.1.0.0/24"
       description = "WireGuard (Group)"
-      interface = "wireguard"
+      interface   = "wireguard"
+    }
+    "wifi_secure" : {
+      subnet_cidr = "10.10.0.0/24"
+      pools = [
+        "10.10.0.100 - 10.10.0.200"
+      ]
+      description = "Wifi Secure"
+      interface   = "opt8"
+    }
+    "wifi_guest" : {
+      subnet_cidr = "10.10.10.0/24"
+      pools = [
+        "10.10.10.100 - 10.10.10.200"
+      ]
+      description = "Wifi Guest"
+      interface   = "opt7"
+    }
+    "k8s_cp" : {
+      subnet_cidr = "10.20.0.0/24"
+      pools = [
+        "10.20.0.100 - 10.20.0.200"
+      ]
+      description = "Kubernetes Control Plane"
+      interface   = "opt6"
+    }
+    "k8s_wk" : {
+      subnet_cidr = "10.20.10.0/24"
+      pools = [
+        "10.20.10.100 - 10.20.10.200"
+      ]
+      description = "Kubernetes Worker"
+      interface   = "opt5"
+    }
+    "insecure" : {
+      subnet_cidr = "10.50.0.0/24"
+      pools = [
+        "10.50.0.100 - 10.50.0.200"
+      ]
+      description = "Insecure"
+      interface   = "opt4"
     }
   }
 }
@@ -64,17 +104,96 @@ resource "opnsense_kea_subnet" "dhcp_subnets" {
   description = each.value.description
 }
 
-resource "opnsense_firewall_filter" "dmz" {
-  for_each = {
-    "ntp" = { protocol = "UDP", port = 123 }
-    "dns" = { protocol = "TCP/UDP", port = 53 }
-  }
+resource "opnsense_firewall_category" "category" {
+  for_each = toset([
+    "baseline",
+    "talos"
+  ])
+  name = each.value
+}
+
+resource "opnsense_firewall_filter" "ntp" {
+  for_each = { for k, v in local.dhcp_subnets : k => v if v.interface != "wireguard" }
+
   enabled     = true
-  description = "Allow ${upper(each.key)} traffic to opnsense server"
+  description = "Allow NTP traffic"
 
   interface = {
-    interface = [local.dhcp_subnets["dmz"].interface]
+    interface = [each.value.interface]
   }
+
+  categories = [
+    opnsense_firewall_category.category["baseline"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = "UDP"
+
+    source = {
+      net = "${each.value.interface}"
+    }
+
+    destination = {
+      net  = "${each.value.interface}ip"
+      port = 123
+    }
+
+    log = false
+  }
+}
+
+resource "opnsense_firewall_filter" "dns" {
+  for_each = { for k, v in local.dhcp_subnets : k => v if v.interface != "wireguard" }
+
+  enabled     = true
+  description = "Allow DNS traffic"
+
+  interface = {
+    interface = [each.value.interface]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["baseline"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = "TCP/UDP"
+
+    source = {
+      net = "${each.value.interface}"
+    }
+
+    destination = {
+      net  = "${each.value.interface}ip"
+      port = 53
+    }
+
+    log = false
+  }
+}
+
+resource "opnsense_firewall_filter" "public" {
+  for_each = {
+    "http" = { protocol = "TCP", port = 80 }
+    "https" = { protocol = "TCP", port = 443 }
+  }
+  enabled     = true
+  description = "Allow ${upper(each.key)} traffic"
+
+  interface = {
+    invert = true
+    interface = [local.dhcp_subnets["insecure"].interface]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["baseline"].id
+  ]
 
   filter = {
     quick     = true
@@ -83,30 +202,149 @@ resource "opnsense_firewall_filter" "dmz" {
     protocol  = each.value.protocol
 
     source = {
-      net = local.dhcp_subnets["dmz"].subnet_cidr
+      net = "any"
     }
 
     destination = {
-      net  = "${cidrhost(local.dhcp_subnets["dmz"].subnet_cidr, 1)}/32",
+      net  = "any"
       port = each.value.port
     }
 
     log = false
   }
-}  
+}
 
-resource "opnsense_firewall_filter" "wireguard" {
+resource "opnsense_firewall_filter" "wireguard_controlplane" {
   for_each = {
-    "talos_apid" = { protocol = "TCP", port = 50000 }
+    "talos_apid"   = { protocol = "TCP", port = 50000 }
+    # "talos_trustd" = { protocol = "TCP", port = 50001 }
+    "k8s_api"  = { protocol = "TCP", port = 6443 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from wireguard to k8s controlplane"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["wireguard"].interface,
+    ]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["wireguard"].interface
+    }
+
+    destination = {
+      net  = local.dhcp_subnets["k8s_cp"].interface
+      port = each.value.port
+    }
+
+    log = true
+  }
+}
+
+resource "opnsense_firewall_filter" "wireguard_worker" {
+  for_each = {
+    "talos_apid"   = { protocol = "TCP", port = 50000 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from wireguard to k8s workers"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["wireguard"].interface,
+    ]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["wireguard"].interface
+    }
+
+    destination = {
+      net  = local.dhcp_subnets["k8s_wk"].interface
+      port = each.value.port
+    }
+
+    log = false
+  }
+}
+
+
+resource "opnsense_firewall_filter" "controlplane_worker" {
+  for_each = {
+    "kubelet_api" = { protocol = "TCP", port = 10250 }
+    "cilium_vxlan" = { protocol = "UDP", port = 8472 }
+    "cilium_health" = { protocol = "TCP", port = 4240 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from k8s controlplane to k8s workers"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["k8s_cp"].interface,
+    ]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["k8s_cp"].interface
+    }
+
+    destination = {
+      net  = local.dhcp_subnets["k8s_wk"].interface
+      port = each.value.port
+    }
+
+    log = false
+  }
+}
+
+resource "opnsense_firewall_filter" "worker_controlplane" {
+  for_each = {
     "talos_trustd" = { protocol = "TCP", port = 50001 }
-    "talos_https" = { protocol = "TCP", port = 6443 }
+    "k8s_api"  = { protocol = "TCP", port = 6443 }
+    "cilium_vxlan" = { protocol = "UDP", port = 8472 }
   }
   enabled     = true
-  description = "Allow ${upper(each.key)} traffic to opnsense server"
+  description = "Allow ${each.key} from k8s workers to k8s controlplane"
 
   interface = {
-    interface = [local.dhcp_subnets["wireguard"].interface]
+    interface = [
+      local.dhcp_subnets["k8s_wk"].interface,
+    ]
   }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
 
   filter = {
     quick     = true
@@ -115,14 +353,14 @@ resource "opnsense_firewall_filter" "wireguard" {
     protocol  = each.value.protocol
 
     source = {
-      net = local.dhcp_subnets["wireguard"].subnet_cidr
+      net = local.dhcp_subnets["k8s_wk"].interface
     }
 
     destination = {
-      net  = local.dhcp_subnets["lan"].subnet_cidr
+      net  = local.dhcp_subnets["k8s_cp"].interface
       port = each.value.port
     }
 
     log = false
   }
-}  
+}

@@ -112,6 +112,13 @@
       <descr>VPN_TUNNEL</descr>
     </opt3>
     %{~ endif ~}
+    <opt4>
+      <if>vtnet4</if>
+      <enable>1</enable>
+      <descr>INSECURE</descr>
+      <ipaddr>10.50.0.1</ipaddr>
+      <subnet>24</subnet>
+    </opt4>
   </interfaces>
   <unbound>
     <enable>1</enable>

@@ -5,7 +5,7 @@ locals {
     vmbr1  = { ports = ["enp5s0"], mac_address = "BC:24:11:AA:BB:02", managed = true, vlan_aware = true }
     vmbr2  = { ports = ["enp6s0"], mac_address = "BC:24:11:AA:BB:03", managed = true, vlan_aware = true }
     vmbr3  = { ports = ["enp7s0"], mac_address = "BC:24:11:AA:BB:04", managed = true }
-    vmbr10 = { ports = [], mac_address = "BC:24:11:AA:BB:0B", managed = true }
+    vmbr4 = { ports = [], mac_address = "BC:24:11:AA:BB:05", managed = true }
   }
   linux_vlans = {
     K8S_CP      = { id = 10, interface = "vmbr1" }

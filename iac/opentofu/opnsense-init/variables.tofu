@@ -16,6 +16,6 @@ variable "opnsense_version" {
 }
 
 variable "proxmox_node" {
-  description = "Node to create the template into"
+  description = "Node to create the VM into"
   type        = string
 }
