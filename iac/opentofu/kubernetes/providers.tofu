@@ -9,7 +9,7 @@ terraform {
       version = "0.10.1"
     }
     helm = {
-      source = "helm"
+      source  = "helm"
       version = "3.1.1"
     }
   }

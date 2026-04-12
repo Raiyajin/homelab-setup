@@ -9,12 +9,12 @@ resource "proxmox_virtual_environment_storage_lvmthin" "kubernetes" {
 }
 
 resource "proxmox_virtual_environment_download_file" "talos_boot_image" {
-  node_name    = "nas"
+  node_name = "nas"
 
   content_type = "iso"
   datastore_id = "local"
-  
-  url = data.talos_image_factory_urls.this["base"].urls.iso_secureboot
+
+  url       = data.talos_image_factory_urls.this["base"].urls.iso_secureboot
   file_name = "metal-amd64-secureboot.iso"
 }
 
@@ -43,11 +43,11 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
   # GPU passthrough related parameters (see: https://pve.proxmox.com/wiki/PCI(e)_Passthrough)
   bios    = "ovmf"
   machine = "q35"
-  
+
   efi_disk {
     datastore_id = "local-lvm"
     file_format  = "raw"
-    type = "4m"
+    type         = "4m"
   }
 
   dynamic "hostpci" {
@@ -80,13 +80,13 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
   }
 
   dynamic "network_device" {
-    # Only take the first interface if it's a controlplane
-    for_each = each.value.role == "controlplane" ? [local.network_interfaces[0]] : local.network_interfaces
-    
+    for_each = local.network_interfaces[each.value.role]
+
     content {
-      bridge      = network_device.value.bridge
-      # mac_address = network_device.value.mac_address
-      model       = "virtio"
+      bridge  = network_device.value.bridge
+      vlan_id = lookup(network_device.value, "vlan_id", null)
+
+      model    = "virtio"
       firewall = false
     }
   }
@@ -114,7 +114,7 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
 
   # Attachment for the Installer ISO
   cdrom {
-    file_id = proxmox_virtual_environment_download_file.talos_boot_image.id
+    file_id   = proxmox_virtual_environment_download_file.talos_boot_image.id
     interface = "ide3"
   }
 

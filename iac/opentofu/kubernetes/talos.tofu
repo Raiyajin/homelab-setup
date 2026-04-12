@@ -1,6 +1,6 @@
 # Wait for VM to be fully ready
 resource "time_sleep" "wait_60_seconds" {
-  depends_on = [proxmox_virtual_environment_vm.kubernetes]
+  depends_on      = [proxmox_virtual_environment_vm.kubernetes]
   create_duration = "60s"
 }
 
@@ -8,15 +8,15 @@ resource "talos_machine_secrets" "this" {}
 
 data "helm_template" "cilium" {
   # TODO: add support for GatewayAPI
-  name       = "cilium"
-  repository = "https://helm.cilium.io/"
-  chart      = "cilium"
-  namespace  = "kube-system"
-  version = "v1.19.2"
+  name         = "cilium"
+  repository   = "https://helm.cilium.io/"
+  chart        = "cilium"
+  namespace    = "kube-system"
+  version      = "v1.19.2"
   kube_version = var.kubernetes_version
 
   values = [
-  <<-EOT
+    <<-EOT
   ipam:
     mode: kubernetes
 
@@ -60,15 +60,15 @@ data "helm_template" "cilium" {
 }
 
 data "helm_template" "argocd" {
-  name       = "argo-cd"
-  repository = "https://argoproj.github.io/argo-helm/"
-  chart      = "argo-cd"
-  namespace  = "argocd"
-  version    = "9.4.17"
+  name         = "argo-cd"
+  repository   = "https://argoproj.github.io/argo-helm/"
+  chart        = "argo-cd"
+  namespace    = "argocd"
+  version      = "9.4.17"
   kube_version = var.kubernetes_version
 
   set = [
-    { name = "global.domain"
+    { name  = "global.domain"
       value = "argocd.platform.internal"
     },
   ]
@@ -111,7 +111,7 @@ resource "talos_image_factory_schematic" "this" {
 }
 
 data "talos_image_factory_urls" "this" {
-  for_each = talos_image_factory_schematic.this
+  for_each      = talos_image_factory_schematic.this
   talos_version = var.talos_version
   schematic_id  = each.value.id
   platform      = "metal"
@@ -135,25 +135,25 @@ data "talos_machine_configuration" "configuration" {
   config_patches = [
     yamlencode({
       apiVersion = "v1alpha1"
-      kind = "HostnameConfig"
-      hostname = each.key
-      auto = "off"
+      kind       = "HostnameConfig"
+      hostname   = each.key
+      auto       = "off"
     }),
     yamlencode({
-    # Replace default CNI (flannel) and kube-proxy by Cilium
-    cluster = {
-      network = {
-        cni = { name = "none" }
-      }
-      proxy = { disabled = true }
-      inlineManifests = [
-        {
-          name     = "cilium"
-          contents = data.helm_template.cilium.manifest
-        },
-        {
-          name     = "argocd"
-          contents = <<-EOT
+      # Replace default CNI (flannel) and kube-proxy by Cilium
+      cluster = {
+        network = {
+          cni = { name = "none" }
+        }
+        proxy = { disabled = true }
+        inlineManifests = [
+          {
+            name     = "cilium"
+            contents = data.helm_template.cilium.manifest
+          },
+          {
+            name     = "argocd"
+            contents = <<-EOT
           apiVersion: v1
           kind: Namespace
           metadata:
@@ -178,43 +178,43 @@ data "talos_machine_configuration" "configuration" {
             type: ${base64encode("git")}
             url: ${base64encode(var.github_repository)}
           EOT
-        }
-      ]
-    }
-    
-    machine = {
-      install = {
-        diskSelector = {
-          size = "< 20GB"
-        }
-        image = lookup(each.value, "gpu", null) != null ? data.talos_image_factory_urls.this["nvidia_gpu"].urls.installer_secureboot : data.talos_image_factory_urls.this["base"].urls.installer_secureboot
-        wipe = true
-      }
-      
-      network = {
-        # hostname = each.key
-        interfaces = [
-          for v in (each.value.role == "controlplane" ? [local.network_interfaces[0]] : local.network_interfaces) : {
-            interface = v.interface
-            dhcp = v.dhcp
-            dhcpOptions = {
-              routeMetric = 100
-            }
           }
         ]
       }
 
-      kernel = {
-        modules = lookup(each.value, "gpu", null) != null ? [
-          { name = "nvidia" },
-          { name = "nvidia_uvm" },
-          { name = "nvidia_drm" },
-          { name = "nvidia_modeset" }
-        ] : []
-      }
-      files = lookup(each.value, "gpu", null) != null ? [
-        {
-          content = <<-EOT
+      machine = {
+        install = {
+          diskSelector = {
+            size = "< 20GB"
+          }
+          image = lookup(each.value, "gpu", null) != null ? data.talos_image_factory_urls.this["nvidia_gpu"].urls.installer_secureboot : data.talos_image_factory_urls.this["base"].urls.installer_secureboot
+          wipe  = true
+        }
+
+        network = {
+          # hostname = each.key
+          interfaces = [
+            for v in local.network_interfaces[each.value.role] : {
+              interface = v.interface
+              dhcp      = v.dhcp
+              dhcpOptions = v.dhcp ? {
+                routeMetric = 100
+              } : null
+            }
+          ]
+        }
+
+        kernel = {
+          modules = lookup(each.value, "gpu", null) != null ? [
+            { name = "nvidia" },
+            { name = "nvidia_uvm" },
+            { name = "nvidia_drm" },
+            { name = "nvidia_modeset" }
+          ] : []
+        }
+        files = lookup(each.value, "gpu", null) != null ? [
+          {
+            content     = <<-EOT
             [plugins]
               [plugins."io.containerd.grpc.v1.cri"]
                 [plugins."io.containerd.grpc.v1.cri".containerd]
@@ -225,19 +225,19 @@ data "talos_machine_configuration" "configuration" {
                       [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
                         BinaryName = "/usr/local/bin/nvidia-container-runtime"
           EOT
-          path        = "/var/cri/conf.d/20-nvidia.toml"
-          op          = "create"
-          permissions = 0
-        }
-      ] : []
+            path        = "/var/cri/conf.d/20-nvidia.toml"
+            op          = "create"
+            permissions = 0
+          }
+        ] : []
 
-      sysctls = {
-        "net.core.bpf_jit_harden"            = "1"
-        "net.ipv6.conf.all.disable_ipv6"     = "1"
-        "net.ipv6.conf.default.disable_ipv6" = "1"
-        "net.ipv6.conf.lo.disable_ipv6"      = "1"
+        sysctls = {
+          "net.core.bpf_jit_harden"            = "1"
+          "net.ipv6.conf.all.disable_ipv6"     = "1"
+          "net.ipv6.conf.default.disable_ipv6" = "1"
+          "net.ipv6.conf.lo.disable_ipv6"      = "1"
+        }
       }
-    }
   })]
 }
 

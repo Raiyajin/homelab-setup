@@ -18,5 +18,5 @@ variable "cluster_name" {
 
 variable "github_repository" {
   description = "Public github repository https address to use for argo cd"
-  type = string
+  type        = string
 }
