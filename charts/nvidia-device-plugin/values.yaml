@@ -1,6 +1,8 @@
 nvidia-device-plugin:
   gfd:
     enabled: true
+
+  deviceDiscoveryStrategy: "nvml"
 #   nfd:
 #   enabled: true
 
