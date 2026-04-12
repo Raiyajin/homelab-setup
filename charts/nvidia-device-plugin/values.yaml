@@ -8,6 +8,8 @@ nvidia-device-plugin:
     capabilities:
       add:
         - SYS_ADMIN
+
+  runtimeClassName: nvidia
 #   nfd:
 #   enabled: true
 
