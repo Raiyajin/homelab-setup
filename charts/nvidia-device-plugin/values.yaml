@@ -1,8 +1,10 @@
 nvidia-device-plugin:
-  node-feature-discovery:
-  enabled: true
+  gfd:
+    enabled: true
+#   nfd:
+#   enabled: true
 
-  worker:
-    config:
-      core:
-        sources: [cpu, pci, kernel, usb, storage]
+#   worker:
+#     config:
+#       core:
+#         sources: [cpu, pci, kernel, usb, storage]
