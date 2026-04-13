@@ -1,0 +1,15 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: "node-metrics-scraping"
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s-app: metrics-server
+  egress:
+  - toEntities:
+    - cluster
+    toPorts:
+    - ports:
+      - port: "10250"
+        protocol: TCP

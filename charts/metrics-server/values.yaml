@@ -8,19 +8,17 @@ metrics-server:
       memory: 50Mi
 
   tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
 
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          kinship: In
-          values:
-          - node-role.kubernetes.io/control-plane
-
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
   args:
     - --cert-dir=/tmp
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
