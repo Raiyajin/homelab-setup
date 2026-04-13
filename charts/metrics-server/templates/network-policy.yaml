@@ -5,7 +5,7 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      k8s-app: metrics-server
+      app.kubernetes.io/name: metrics-server
   egress:
   - toEntities:
     - cluster

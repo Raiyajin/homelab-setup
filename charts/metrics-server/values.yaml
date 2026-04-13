@@ -7,6 +7,8 @@ metrics-server:
       cpu: 50m
       memory: 50Mi
 
+  # As worker nodes can't communicate to control plane node kubelet API
+  # we moved metrics-server to control plane node and restrict his permission using network policy
   tolerations:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
