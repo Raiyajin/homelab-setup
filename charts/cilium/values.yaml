@@ -1,11 +1,17 @@
 cilium:
   ipam:
     mode: kubernetes
+    operator:
+      clusterPoolIPv4PodCIDRList: ["10.244.0.0/16"]
 
   kubeProxyReplacement: true
   k8sServiceHost: localhost
   k8sServicePort: 7445
   
+  hubble:
+    ui:
+      enabled: true
+
   securityContext:
     capabilities:
       ciliumAgent:

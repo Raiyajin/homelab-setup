@@ -25,4 +25,5 @@ metrics-server:
     - --cert-dir=/tmp
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --kubelet-use-node-status-port 
+    # TODO USE TLS
     - --kubelet-insecure-tls
