@@ -7,23 +7,17 @@ apps:
     namespace: kube-system
     project: infrastructure
 
+  gateway-api:
+    namespace: kube-system
+    project: infrastructure
+    type: directory
+    repoURL: https://github.com/kubernetes-sigs/gateway-api.git
+    path: config/crd/standard
+    targetRevision: v1.4.1
+
   metrics-server:
     namespace: kube-system
     project: infrastructure
-
-  # gpu-operator:
-  #   namespace: gpu-operator
-  #   project: infrastructure
-  #   syncPolicy:
-  #     automated:
-  #       prune: true
-  #       selfHeal: true
-  #     managedNamespaceMetadata:
-  #       labels:
-  #         pod-security.kubernetes.io/enforce: privileged
-  #     syncOptions:
-  #       - CreateNamespace=true
-  #       - RespectIgnoreDifferences=true
 
   nvidia-device-plugin:
     namespace: nvidia-device-plugin
