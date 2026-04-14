@@ -11,6 +11,8 @@ cilium:
   hubble:
     ui:
       enabled: true
+    relay:
+      enabled: true
 
   securityContext:
     capabilities:
