@@ -8,6 +8,8 @@ repoURL: https://github.com/Raiyajin/homelab-setup.git
 projects:
   infrastructure:
     namespace: '*'
+    sourceRepos:
+      - https://github.com/kubernetes-sigs/gateway-api.git
   apps:
     namespace: '!kube-system'
 
