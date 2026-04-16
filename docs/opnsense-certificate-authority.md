@@ -30,6 +30,13 @@ Click on the "Pen" symbol next to the existing Web GUI certificate and update it
 
 To verify that its working, you must go back to the "Authorities" page and download the certificate and install it on your local computer.
 
+## Create an Intermediate OPNsense Internal Certificate Authority
+
+Go to "System" > "Trust" > "Certificates" and click "[+]" (add) button.
+
+Fill out the fields and set the "Issuer" with the previously created CA.
+![opnsense-intermediate-internal-ca-creation](./images/opnsense-intermediate-internal-ca-creation.png)
+
 ## Install the CA on Windows
 
 [On Windows](https://learn.microsoft.com/en-us/skype-sdk/sdn/articles/installing-the-trusted-root-certificate), once you downloaded update the Certificate Authority certificate, make sure its extension is ".crt" (if its ".pem" you can rename it) and double click on it.
