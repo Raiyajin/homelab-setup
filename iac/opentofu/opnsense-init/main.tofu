@@ -8,6 +8,7 @@ locals {
     vmbr4 = { ports = [], mac_address = "BC:24:11:AA:BB:05", managed = true }
   }
   linux_vlans = {
+    PLATFORM    = { id = 5, interface = "vmbr1" }
     K8S_CP      = { id = 10, interface = "vmbr1" }
     K8S_WK      = { id = 20, interface = "vmbr1" }
     WIFI_SECURE = { id = 30, interface = "vmbr2" }
