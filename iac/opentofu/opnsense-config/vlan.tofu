@@ -1,5 +1,6 @@
 resource "opnsense_interfaces_vlan" "vlan" {
   for_each = {
+    PLATFORM    = { tag = 5, parent = "vtnet1" }
     K8S_CP      = { tag = 10, parent = "vtnet1" }
     K8S_WK      = { tag = 20, parent = "vtnet1" }
     WIFI_SECURE = { tag = 30, parent = "vtnet2" }

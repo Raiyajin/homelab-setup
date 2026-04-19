@@ -71,6 +71,14 @@ locals {
       description = "Insecure"
       interface   = "opt4"
     }
+    "platform" : {
+      subnet_cidr = "10.20.5.0/24"
+      pools = [
+        "10.20.5.100 - 10.20.5.200"
+      ]
+      description = "Platform"
+      interface   = "opt9"
+    }
   }
 }
 
@@ -182,10 +190,12 @@ resource "opnsense_firewall_filter" "public" {
   for_each = {
     "http" = { protocol = "TCP", port = 80 }
     "https" = { protocol = "TCP", port = 443 }
+    "ping" = { protocol = "ICMP", port = null }
   }
   enabled     = true
   description = "Allow ${upper(each.key)} traffic"
 
+  # All interface but INSECURE
   interface = {
     invert = true
     interface = [local.dhcp_subnets["insecure"].interface]
@@ -288,12 +298,44 @@ resource "opnsense_firewall_filter" "wireguard_worker" {
   }
 }
 
+resource "opnsense_firewall_filter" "wireguard_platform" {
+  for_each = {
+    "ssh"   = { protocol = "TCP", port = 22 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from wireguard to platform"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["wireguard"].interface,
+    ]
+  }
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["wireguard"].interface
+    }
+
+    destination = {
+      net  = local.dhcp_subnets["platform"].interface
+      port = each.value.port
+    }
+
+    log = false
+  }
+}
 
 resource "opnsense_firewall_filter" "controlplane_worker" {
   for_each = {
     "kubelet_api" = { protocol = "TCP", port = 10250 }
     "cilium_vxlan" = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
+    "cilium_hubble" = { protocol = "TCP", port = 4244 }
   }
   enabled     = true
   description = "Allow ${each.key} from k8s controlplane to k8s workers"
@@ -332,6 +374,7 @@ resource "opnsense_firewall_filter" "worker_controlplane" {
     "talos_trustd" = { protocol = "TCP", port = 50001 }
     "k8s_api"  = { protocol = "TCP", port = 6443 }
     "cilium_vxlan" = { protocol = "UDP", port = 8472 }
+    "cilium_health" = { protocol = "TCP", port = 4240 }
   }
   enabled     = true
   description = "Allow ${each.key} from k8s workers to k8s controlplane"
