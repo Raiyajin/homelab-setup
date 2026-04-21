@@ -224,6 +224,42 @@ resource "opnsense_firewall_filter" "public" {
   }
 }
 
+resource "opnsense_firewall_filter" "platform_controlplane" {
+  for_each = {
+    "k8s_api"  = { protocol = "TCP", port = 6443 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from platform to k8s controlplane"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["platform"].interface,
+    ]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["platform"].interface
+    }
+
+    destination = {
+      net  = local.dhcp_subnets["k8s_cp"].interface
+      port = each.value.port
+    }
+
+    log = true
+  }
+}
+
 resource "opnsense_firewall_filter" "wireguard_controlplane" {
   for_each = {
     "talos_apid"   = { protocol = "TCP", port = 50000 }
