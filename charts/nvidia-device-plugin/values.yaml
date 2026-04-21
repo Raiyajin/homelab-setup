@@ -3,7 +3,7 @@ nvdp:
     enabled: true
 
   deviceDiscoveryStrategy: "nvml"
-  nvidiaDriverRoot: "/usr/local/glibc/usr/lib/"
+  nvidiaDriverRoot: "/usr/local/glibc/usr/lib"
 
   securityContext:
     capabilities:
