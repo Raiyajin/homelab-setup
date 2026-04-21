@@ -163,17 +163,17 @@ path "auth/token/create" {
 EOF
 
 # Create the policy
-bao policy write -namespace=homelab homelab-read homelab-policy.hcl
+bao policy write -namespace=homelab homelab-admin homelab-policy.hcl
 ```
 
-Create the AppRole for OpenTofu with the `homelab-read` policy
+Create the AppRole for OpenTofu with the `homelab-admin` policy
 ```bash
 bao write -namespace=homelab auth/tofu/role/tofu \
     secret_id_ttl=24h \
-    token_num_uses=10 \
+    token_num_uses=0 \
     token_ttl=1h \
     token_max_ttl=3h \
-    token_policies="homelab-read"
+    token_policies="homelab-admin"
 ```
 
 Retrieve the role id:

@@ -38,7 +38,9 @@ apps:
     project: infrastructure
     syncPolicy:
       syncOptions:
-      - ServerSideApply=true
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
+        - ServerSideApply=true
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
