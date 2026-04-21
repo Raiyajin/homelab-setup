@@ -36,6 +36,9 @@ apps:
   external-secrets:
     namespace: external-secrets
     project: infrastructure
+    syncPolicy:
+      syncOptions:
+      - ServerSideApply=true
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
