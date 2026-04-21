@@ -33,6 +33,9 @@ apps:
         - CreateNamespace=true
         - RespectIgnoreDifferences=true
 
+  external-secrets:
+    namespace: external-secrets
+    project: infrastructure
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
