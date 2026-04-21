@@ -23,16 +23,16 @@ variable "github_repository" {
 
 variable "approle_role_id" {
   description = "OpenBao/Vault AppRole role id"
-  type = string
+  type        = string
 }
 
 variable "approle_secret_id" {
   description = "OpenBao/Vault AppRole secret id"
-  type = string
+  type        = string
 }
 
 variable "approle_login_path" {
   description = "OpenBao/Vault AppRole login path"
-  type = string
-  default = "auth/approle/login"
+  type        = string
+  default     = "auth/approle/login"
 }

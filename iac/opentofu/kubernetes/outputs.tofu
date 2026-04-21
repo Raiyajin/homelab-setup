@@ -12,7 +12,7 @@ output "kubeconfig" {
 }
 
 output "talosconfig" {
-  value     = talos_machine_secrets.this.client_configuration
+  value     = local.kubeconfig
   sensitive = true
 }
 

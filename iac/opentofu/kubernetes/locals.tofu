@@ -44,4 +44,6 @@ locals {
   }
   # bootstrapped_controlplane_ip = element(flatten(proxmox_virtual_environment_vm.kubernetes["k8s-cp-01"].ipv4_addresses), -1)
   bootstrapped_controlplane_ip = local.proxmox_vm_node_ips["k8s-cp-01"]
+
+  kubeconfig = talos_cluster_kubeconfig.this.kubernetes_client_configuration
 }

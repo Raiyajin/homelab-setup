@@ -12,8 +12,12 @@ terraform {
       source  = "helm"
       version = "3.1.1"
     }
+    kubernetes = {
+      source  = "kubernetes"
+      version = "~> 3.1.0"
+    }
     vault = {
-      source = "vault"
+      source  = "vault"
       version = "~> 5.8.0"
     }
   }
@@ -28,6 +32,13 @@ provider "proxmox" {
 }
 
 provider "talos" {}
+
+provider "kubernetes" {
+  host                   = local.kubeconfig.host
+  client_certificate     = base64decode(local.kubeconfig.client_certificate)
+  client_key             = base64decode(local.kubeconfig.client_key)
+  cluster_ca_certificate = base64decode(local.kubeconfig.ca_certificate)
+}
 
 provider "vault" {
   auth_login {
