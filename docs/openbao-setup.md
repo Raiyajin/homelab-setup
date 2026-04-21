@@ -115,3 +115,78 @@ export BAO_TOKEN='s.xxxxxxxxxxxxxxxxxxxxxxxx'
 # Repeat with different unseal keys (based on '-key-threshold' value)
 bao operator unseal $UNSEAL_KEY_X
 ```
+
+### Create an AppRole for OpenTofu to manage Kubernetes access
+
+Use a dedicated namespace for the Kubernetes cluster:
+```bash
+bao namespace create homelab
+```
+
+Enable AppRole in the namespace
+```bash
+bao auth enable -namespace=homelab -path=tofu approle
+```
+
+Create and apply a policy:
+```bash
+cat > homelab-policy.hcl <<EOF
+# Manage ACL policies
+path "sys/policies/acl/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# Manage the Kubernetes Auth Config
+path "auth/kubernetes/config" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Manage Kubernetes Roles
+path "auth/kubernetes/role/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+
+# Manage auth methods
+path "sys/auth/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# Manage Secrets engines
+path "sys/mounts/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# Allow the Terraform provider to create child tokens
+path "auth/token/create" {
+  capabilities = ["update"]
+}
+EOF
+
+# Create the policy
+bao policy write -namespace=homelab homelab-read homelab-policy.hcl
+```
+
+Create the AppRole for OpenTofu with the `homelab-read` policy
+```bash
+bao write -namespace=homelab auth/tofu/role/tofu \
+    secret_id_ttl=24h \
+    token_num_uses=10 \
+    token_ttl=1h \
+    token_max_ttl=3h \
+    token_policies="homelab-read"
+```
+
+Retrieve the role id:
+```bash
+bao read -namespace=homelab  auth/tofu/role/tofu/role-id
+```
+
+Generate a secret id:
+```bash
+bao write -namespace=homelab -f auth/tofu/role/tofu/secret-id
+```
+
+Enable KV on a path for kubernetes:
+```bash
+bao secrets enable -namespace homelab -path kubernetes/talos-cluster kv
+```
