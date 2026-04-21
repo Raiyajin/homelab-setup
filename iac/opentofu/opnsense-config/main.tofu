@@ -368,6 +368,7 @@ resource "opnsense_firewall_filter" "wireguard_platform" {
 
 resource "opnsense_firewall_filter" "controlplane_worker" {
   for_each = {
+    "talos_apid"   = { protocol = "TCP", port = 50000 }
     "kubelet_api" = { protocol = "TCP", port = 10250 }
     "cilium_vxlan" = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
