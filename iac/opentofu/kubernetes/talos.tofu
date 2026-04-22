@@ -177,6 +177,15 @@ data "talos_machine_configuration" "configuration" {
             project: ${base64encode("default")}
             type: ${base64encode("git")}
             url: ${base64encode(var.github_repository)}
+          ---
+          apiVersion: v1
+          metadata:
+            name: internal-ca
+            namespace: kube-system
+          data:
+            cert: ${var.base64_internal_ca}
+          kind: Secret
+          type: Opaque
           EOT
           }
         ]

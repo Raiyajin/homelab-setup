@@ -52,7 +52,7 @@ resource "vault_policy" "external_secrets" {
   name = "external-secrets-policy"
 
   policy = <<EOT
-path "secret/data/kubernetes/talos-cluster/*" {
+path "kubernetes/talos-cluster/*" {
   capabilities = ["read", "list"]
 }
 EOT

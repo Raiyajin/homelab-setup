@@ -36,3 +36,8 @@ variable "approle_login_path" {
   type        = string
   default     = "auth/approle/login"
 }
+
+variable "base64_internal_ca" {
+  description = "Base64 encoded Internal CA certificate"
+  type        = string
+}
