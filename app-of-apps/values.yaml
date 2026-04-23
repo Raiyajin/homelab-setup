@@ -42,6 +42,10 @@ apps:
         - RespectIgnoreDifferences=true
         - ServerSideApply=true
 
+  cert-manager:
+    namespace: tools
+    project: infrastructure
+
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 defaults:
