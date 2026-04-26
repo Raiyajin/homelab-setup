@@ -9,7 +9,7 @@ spec:
     server: "https://openbao.internal"
     namespace: "homelab"
     caBundleSecretRef: 
-      name: "internal-ca"
+      name: {{ index .Values.global "ca-secret-name" }}
       key: "cert"
     auth:
       kubernetes:

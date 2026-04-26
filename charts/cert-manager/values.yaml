@@ -1,5 +1,6 @@
 global:
   namespace: "tools"
+  ca-secret-name: internal-ca
 
 cert-manager:
   crds:
