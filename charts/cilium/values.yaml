@@ -13,6 +13,10 @@ cilium:
       enabled: true
     relay:
       enabled: true
+
+      tls:
+        enabled: true
+        mtls: true
     
     tls:
       enabled: true
