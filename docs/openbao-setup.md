@@ -160,6 +160,11 @@ path "sys/mounts/*" {
 path "auth/token/create" {
   capabilities = ["update"]
 }
+
+# Manage PKI data
+path "pki/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
 EOF
 
 # Create the policy
