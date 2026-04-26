@@ -13,7 +13,7 @@ spec:
       key: "cert"
     auth:
       kubernetes:
-        mountPath: "kubernetes"
+        mountPath: "/v1/auth/kubernetes"
         role: "cert-manager-role"
         serviceAccountRef:
           name: "cert-manager"
