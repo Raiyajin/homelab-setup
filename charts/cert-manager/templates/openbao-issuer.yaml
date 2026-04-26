@@ -17,4 +17,3 @@ spec:
         role: "cert-manager-role"
         serviceAccountRef:
           name: "cert-manager"
-          namespace: {{ .Values.global.namespace }}
