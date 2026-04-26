@@ -412,6 +412,7 @@ resource "opnsense_firewall_filter" "worker_controlplane" {
     "k8s_api"  = { protocol = "TCP", port = 6443 }
     "cilium_vxlan" = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
+    "cilium_hubble" = { protocol = "TCP", port = 4244 }
   }
   enabled     = true
   description = "Allow ${each.key} from k8s workers to k8s controlplane"
