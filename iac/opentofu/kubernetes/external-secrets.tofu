@@ -74,18 +74,23 @@ resource "vault_pki_secret_backend_role" "role" {
   backend = "pki"
 
   name    = "cert-manager"
-  ttl     = "720h"
-  max_ttl = "8760h"
+  ttl     = "2592000"
+  max_ttl = "31536000"
 
-  allow_ip_sans = false
-  key_type      = "ec"
-  key_bits      = 256
+  key_type = "any"
+  key_bits = 0
 
-  allowed_domains             = ["homelab.internal"]
+  allowed_domains             = [
+    "homelab.internal", 
+    "hubble-ui.cilium.io", 
+    "hubble-relay.cilium.io",
+    "default.hubble-grpc.cilium.io"
+  ]
   allow_bare_domains          = false
+  allow_ip_sans               = false
   allow_localhost             = false
   allow_subdomains            = true
-  allow_wildcard_certificates = false
+  allow_wildcard_certificates = true
 }
 
 resource "vault_policy" "policy" {
