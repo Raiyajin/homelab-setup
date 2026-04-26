@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: openbao-homelab
+  namespace: {{ .Values.global.namespace }}
+spec:
+  vault:
+    path: pki/sign/cert-manager
+    server: "https://openbao.internal"
+    namespace: "homelab"
+    caBundleSecretRef: 
+      name: "internal-ca"
+      key: "cert"
+    auth:
+      kubernetes:
+        mountPath: "kubernetes"
+        role: "cert-manager-role"
+        serviceAccountRef:
+          name: "cert-manager"
+          namespace: {{ .Values.global.namespace }}
