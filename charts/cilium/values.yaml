@@ -65,6 +65,6 @@ loadBalancers:
   internal: 
     cidrs:
       - cidr: "10.50.0.201/32"
-  public: 
-    cidrs:
-      - cidr: "10.50.0.210/32"
+  # public: 
+  #   cidrs:
+  #     - cidr: "10.50.0.210/32"
