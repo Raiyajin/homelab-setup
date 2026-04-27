@@ -1,0 +1,19 @@
+{{- range $name, $config := .Values.gateway }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ $name }}
+  namespace: kube-system
+spec:
+  gatewayClassName: cilium
+  addresses:
+    {{- toYaml $config.addresses | nindent 4 }}
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+{{- end }}

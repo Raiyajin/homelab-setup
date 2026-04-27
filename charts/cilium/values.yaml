@@ -68,3 +68,9 @@ loadBalancers:
   # public: 
   #   blocks:
   #     - cidr: "10.50.0.210/32"
+
+gateway:
+  internal: 
+    addresses:
+    - type: IPAddress
+      value: "10.50.0.201"
