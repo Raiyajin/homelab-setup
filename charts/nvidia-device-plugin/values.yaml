@@ -3,7 +3,6 @@ nvdp:
     enabled: true
 
   deviceDiscoveryStrategy: "nvml"
-  nvidiaDriverRoot: "/usr/local/glibc/usr/lib"
 
   securityContext:
     capabilities:
@@ -11,10 +10,3 @@ nvdp:
         - SYS_ADMIN
 
   runtimeClassName: nvidia
-#   nfd:
-#   enabled: true
-
-#   worker:
-#     config:
-#       core:
-#         sources: [cpu, pci, kernel, usb, storage]

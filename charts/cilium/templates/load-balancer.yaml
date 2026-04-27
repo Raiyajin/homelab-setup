@@ -1,0 +1,10 @@
+{{- range $name, $config := .Values.loadBalancers }}
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: $name
+spec:
+  cidrs: 
+    {{- toYaml $config.cidrs | nindent 4 }}
+---
+{{- end }}
