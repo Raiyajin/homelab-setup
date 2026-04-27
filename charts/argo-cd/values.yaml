@@ -41,6 +41,7 @@ argo-cd:
         memory: 64Mi
 
   dex:
+    enabled: false
     resources:
       limits:
         cpu: 100m
