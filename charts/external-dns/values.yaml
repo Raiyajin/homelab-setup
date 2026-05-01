@@ -50,7 +50,6 @@ opnsense-unbound:
   sources:
     - gateway-httproute
     - gateway-grpcroute
-    - gateway-udproute
     
   registry: noop
   domainFilters: ["homelab.internal"]
