@@ -49,9 +49,8 @@ opnsense-unbound:
   policy: sync
   sources:
     - gateway-grpcroute
-    - gateway-tlsroute
     - gateway-tcproute
     - gateway-udproute
-    
+
   registry: noop
   domainFilters: ["homelab.internal"]
