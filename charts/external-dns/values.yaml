@@ -26,7 +26,7 @@ opnsense-unbound:
           valueFrom:
             secretKeyRef:
               name: opnsense-api
-              key: api-key
+              key: host
         - name: OPNSENSE_SKIP_TLS_VERIFY
           value: "false"
         - name: LOG_LEVEL
