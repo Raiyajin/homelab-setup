@@ -1,0 +1,57 @@
+global:
+  namespace: "tools"
+  opnsense-api-secret-name: opnsense-api
+
+opnsense-unbound:
+  fullnameOverride: external-dns-opnsense
+  logLevel: debug
+  provider:
+    name: webhook
+    webhook:
+      image:
+        repository: ghcr.io/crutonjohn/external-dns-opnsense-webhook
+        tag: v1.0.0
+      env:
+        - name: OPNSENSE_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: opnsense-api
+              key: api-secret
+        - name: OPNSENSE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: opnsense-api
+              key: api-key
+        - name: OPNSENSE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: opnsense-api
+              key: api-key
+        - name: OPNSENSE_SKIP_TLS_VERIFY
+          value: "false"
+        - name: LOG_LEVEL
+          value: debug
+  
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: http-wh-metrics
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+
+      readinessProbe:
+        httpGet:
+          path: /readyz
+          port: http-wh-metrics
+        initialDelaySeconds: 10
+        timeoutSeconds: 5
+
+  policy: sync
+  sources:
+    - gateway-grpcroute
+    - gateway-tlsroute
+    - gateway-tcproute
+    - gateway-udproute
+    
+  registry: noop
+  domainFilters: ["homelab.internal"]

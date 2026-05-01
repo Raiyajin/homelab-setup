@@ -46,6 +46,10 @@ apps:
     namespace: tools
     project: infrastructure
 
+  external-dns:
+    namespace: tools
+    project: infrastructure
+
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 defaults:
