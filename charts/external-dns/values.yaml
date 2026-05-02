@@ -1,8 +1,9 @@
 global:
   namespace: "tools"
-  opnsense-api-secret-name: opnsense-api
 
 opnsense-unbound:
+  apiSecret: opnsense-api
+
   fullnameOverride: external-dns-opnsense
   logLevel: debug
   provider:
@@ -63,3 +64,27 @@ opnsense-unbound:
     - name: ca-certs-volume
       secret:
         secretName: internal-ca
+
+ovh:
+  apiSecret: ovh-api
+
+  provider: "ovh"
+
+  env:
+    - name: OVH_APPLICATION_KEY
+      valueFrom:
+       secretKeyRef:
+         name: ovh-api
+         key: api-key
+
+    - name: OVH_APPLICATION_SECRET
+      valueFrom:
+       secretKeyRef:
+         name: ovh-api
+         key: api-secret
+
+    - name: OVH_CONSUMER_KEY
+      valueFrom:
+       secretKeyRef:
+         name: ovh-api
+         key: consumer-key
