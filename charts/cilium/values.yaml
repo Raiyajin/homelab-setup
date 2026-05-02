@@ -86,4 +86,7 @@ gateway:
         - name: argocd-tls-secret
       allowedRoutes:
         namespaces:
-          from: argocd
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: argocd
