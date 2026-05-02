@@ -91,6 +91,8 @@ resource "vault_pki_secret_backend_role" "role" {
   allow_localhost             = false
   allow_subdomains            = true
   allow_wildcard_certificates = true
+
+  require_cn = false
 }
 
 resource "vault_policy" "policy" {
