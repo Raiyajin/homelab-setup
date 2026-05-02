@@ -6,3 +6,6 @@ cert-manager:
   crds:
     enabled: true
     keep: true
+
+  config:
+    enableGatewayAPI: true
