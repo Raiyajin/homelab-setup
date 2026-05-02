@@ -68,6 +68,7 @@ locals {
       pools = [
         "10.50.0.100 - 10.50.0.200"
       ]
+      enable_gateway = false
       description = "Insecure"
       interface   = "opt4"
     }
@@ -95,7 +96,7 @@ resource "opnsense_kea_subnet" "dhcp_subnets" {
     cidrhost(each.value.subnet_cidr, 1)
   ]
   routers = [
-    cidrhost(each.value.subnet_cidr, 1)
+    lookup(each.value, "enable_gateway", true) ? cidrhost(each.value.subnet_cidr, 1) : null
   ]
 
   domain_name = "internal"

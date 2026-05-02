@@ -5,7 +5,7 @@ locals {
     ],
     "worker" : [
       { bridge = "vmbr1", dhcp = true, interface = "ens18", vlan_id = "20" },
-      { bridge = "vmbr4", dhcp = false, interface = "ens19" }
+      { bridge = "vmbr4", dhcp = true, interface = "ens19" }
     ]
   }
   tags = ["kubernetes", "talos"]

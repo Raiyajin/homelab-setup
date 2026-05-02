@@ -7,7 +7,6 @@ resource "time_sleep" "wait_60_seconds" {
 resource "talos_machine_secrets" "this" {}
 
 data "helm_template" "cilium" {
-  # TODO: add support for GatewayAPI
   name         = "cilium"
   repository   = "https://helm.cilium.io/"
   chart        = "cilium"
