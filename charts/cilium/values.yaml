@@ -75,3 +75,15 @@ gateway:
     addresses:
     - type: IPAddress
       value: "10.50.0.201"
+    listeners:
+    - name: argocd-https
+      protocol: HTTPS
+      port: 443
+      hostname: "argocd.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: argocd-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: argocd

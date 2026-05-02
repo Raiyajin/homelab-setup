@@ -68,7 +68,7 @@ data "helm_template" "argocd" {
 
   set = [
     { name  = "global.domain"
-      value = "argocd.platform.internal"
+      value = "argocd.homelab.internal"
     },
   ]
 }

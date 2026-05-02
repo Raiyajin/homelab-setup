@@ -1,6 +1,6 @@
 # Default values: https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml
 global:
-  domain: argocd.platform.internal
+  domain: argocd.homelab.internal
 
 
 repoURL: https://github.com/Raiyajin/homelab-setup.git
