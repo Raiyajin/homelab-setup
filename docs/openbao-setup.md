@@ -116,6 +116,49 @@ export BAO_TOKEN='s.xxxxxxxxxxxxxxxxxxxxxxxx'
 bao operator unseal $UNSEAL_KEY_X
 ```
 
+### Create a systemd service to start openbao on boot
+
+Create a system user and group to run the service
+```bash
+adduser openbao
+```
+
+Allow openbao binding on lower port for all users
+```bash
+setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/bao
+```
+
+Create the systemd configuration for openbao
+```bash
+cat > /etc/systemd/system/bao.service <<EOF
+[Unit]
+Description="Openbao Secrets Vault"
+After=network.target
+
+[Service]
+User=openbao
+Group=openbao
+
+ExecStart=/usr/bin/bao server -config=/etc/openbao/config.hcl
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Reload systemd and enable the bao service on boot:
+```bash
+systemctl daemon-reload && \
+  systemctl enable bao.service && \
+  systemctl start bao.service
+```
+
+> [!NOTE] 
+> Make sure you ran `chown -R openbao:openbao /var/lib/openbao` beforehand
+
 ### Create an AppRole for OpenTofu to manage Kubernetes access
 
 Use a dedicated namespace for the Kubernetes cluster:
