@@ -50,6 +50,10 @@ apps:
     namespace: tools
     project: infrastructure
 
+  longhorn:
+    namespace: longhorn-system
+    project: infrastructure
+
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 defaults:
