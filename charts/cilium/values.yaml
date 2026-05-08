@@ -75,6 +75,7 @@ gateway:
     addresses:
     - type: IPAddress
       value: "10.50.0.201"
+      
     listeners:
     - name: argocd-https
       protocol: HTTPS
@@ -90,3 +91,18 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: argocd
+
+    - name: longhorn-https
+      protocol: HTTPS
+      port: 443
+      hostname: "longhorn.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: longhorn-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: longhorn-system
