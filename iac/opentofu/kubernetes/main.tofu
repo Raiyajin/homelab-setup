@@ -93,23 +93,30 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
 
   scsi_hardware = "virtio-scsi-single"
 
-  # Talos OS Drive (followed minimum recommandation from: https://docs.siderolabs.com/talos/v1.9/getting-started/system-requirements)
-  disk {
-    datastore_id = "local-lvm"
-    size         = 10
-    interface    = "scsi0"
-    file_format  = "raw"
-    ssd          = true
-    iothread     = true
-  }
-
-  disk {
-    datastore_id = proxmox_virtual_environment_storage_lvmthin.kubernetes.id
-    size         = 5000
-    interface    = "scsi1"
-    file_format  = "raw"
-    ssd          = false
-    iothread     = true
+  dynamic "disk" {
+    for_each = merge({
+      # Talos OS Drive (followed minimum recommandation from: https://docs.siderolabs.com/talos/v1.9/getting-started/system-requirements) 
+      scsi0 = {
+        datastore_id = "local-lvm"
+        size = 10
+        ssd = true
+      }
+    },
+    each.value.role == "worker" ? {
+      scsi1 =  {
+        datastore_id = proxmox_virtual_environment_storage_lvmthin.kubernetes.id
+        size = 5000
+        ssd = false
+      }
+    } : {})
+    content {
+      datastore_id = disk.value.datastore_id
+      size         = disk.value.size
+      interface    = disk.key
+      file_format  = "raw"
+      ssd          = disk.value.ssd
+      iothread     = true      
+    }
   }
 
   # Attachment for the Installer ISO

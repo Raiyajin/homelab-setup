@@ -191,6 +191,12 @@ data "talos_machine_configuration" "configuration" {
       }
 
       machine = {
+        nodeLabels = merge([
+          for disk in proxmox_virtual_environment_vm.kubernetes[each.key].disk : {
+            for filter in ["datastore_id", "ssd", "size"] :
+            "proxmox.com/disk.${disk.interface}-${replace(filter, "_", "-")}" => tostring(lookup(disk, filter, ""))
+          }
+        ]...)
         install = {
           diskSelector = {
             size = "< 20GB"
@@ -200,7 +206,6 @@ data "talos_machine_configuration" "configuration" {
         }
 
         network = {
-          # hostname = each.key
           interfaces = [
             for v in local.network_interfaces[each.value.role] : {
               interface = v.interface

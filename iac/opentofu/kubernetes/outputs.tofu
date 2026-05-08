@@ -23,3 +23,8 @@ output "talos_installer_urls" {
 output "talos_boot_image" {
   value = proxmox_virtual_environment_download_file.talos_boot_image
 }
+
+output "proxmox_node_disks" {
+  value = { for k, v in proxmox_virtual_environment_vm.kubernetes : k => v.disk }
+
+}
