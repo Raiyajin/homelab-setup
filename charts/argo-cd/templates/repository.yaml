@@ -1,0 +1,65 @@
+{{- range .Values.repositories }}
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: repo-{{ .name }}
+  namespace: argocd
+spec:
+  refreshInterval: "0"
+  secretStoreRef:
+    name: openbao-homelab
+    kind: ClusterSecretStore
+  target:
+    name: repo-{{ .name }}
+    template:
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: {{ index . "secret-type" | quote }}
+      data:
+        url: {{ .url | quote }}
+        type: {{ .type | quote }}
+        project: {{ .project | quote }}
+
+        {{- /* GitHub App Template Fields */}}
+        {{- if eq .authType "githubApp" }}
+        githubAppID: "{{"{{ .app_id }}"}}"
+        githubAppInstallationID: "{{"{{ .installation_id }}"}}"
+        githubAppPrivateKey: "{{"{{ .private_key }}"}}"
+        {{- end }}
+
+        {{- /* PAT/Username-Password Template Fields */}}
+        {{- if eq .authType "pat" }}
+        username: "{{"{{ .username }}"}}"
+        password: "{{"{{ .password }}"}}"
+        {{- end }}
+  data:
+    - secretKey: url
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: url
+
+    {{- if eq .authType "githubApp" }}
+    - secretKey: app_id
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: app-id
+    - secretKey: installation_id
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: app-installation-id
+    - secretKey: private_key
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: app-private-key
+    {{- else if eq .authType "pat" }}
+    - secretKey: username
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: {{ .vaultPath }}
+        property: password
+    {{- end }}
+---
+{{- end }}
