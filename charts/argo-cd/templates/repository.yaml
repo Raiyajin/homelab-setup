@@ -33,11 +33,6 @@ spec:
         password: "{{"{{ .password }}"}}"
         {{- end }}
   data:
-    - secretKey: url
-      remoteRef:
-        key: {{ .vaultPath }}
-        property: url
-
     {{- if eq .authType "githubApp" }}
     - secretKey: app_id
       remoteRef:

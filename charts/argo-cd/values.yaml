@@ -11,7 +11,7 @@ repositories:
     url: oci://ghcr.io/raiyajin/charts
     project: apps
     authType: pat
-    vaultPath: "argo-cd/github/pat/homelab-ghcr-argocd"
+    vaultPath: "kubernetes/talos-cluster/argo-cd/github/pat/homelab-ghcr-argocd"
     secret-type: repository
 
   - name: argo-apps
@@ -19,7 +19,7 @@ repositories:
     project: apps
     url: https://github.com/Raiyajin/homelab-argo-apps.git
     authType: githubApp
-    vaultPath: "argo-cd/github/github-apps/homelab-infra-argocd"
+    vaultPath: "kubernetes/talos-cluster/argo-cd/github/github-apps/homelab-infra-argocd"
     secret-type: repository
 
 projects:
