@@ -29,6 +29,8 @@ projects:
       - https://github.com/kubernetes-sigs/gateway-api.git
   apps:
     namespace: '!kube-system'
+    sourceRepos:
+      - https://github.com/Raiyajin/homelab-argo-apps.git
 
 argo-cd:
 

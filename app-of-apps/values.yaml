@@ -56,7 +56,7 @@ apps:
 
   homelab-argo-apps:
     namespace: argocd
-    project: infrastructure
+    project: apps
     repoURL: https://github.com/Raiyajin/homelab-argo-apps.git
     path: app-of-apps
 
