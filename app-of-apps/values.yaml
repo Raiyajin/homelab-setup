@@ -54,6 +54,12 @@ apps:
     namespace: longhorn-system
     project: infrastructure
 
+  homelab-argo-apps:
+    namespace: argocd
+    project: infrastructure
+    repoURL: https://github.com/Raiyajin/homelab-argo-apps.git
+    path: app-of-apps
+
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 defaults:
