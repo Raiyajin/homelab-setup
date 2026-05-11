@@ -12,7 +12,7 @@ repositories:
     project: apps
     authType: pat
     vaultPath: "kubernetes/talos-cluster/argo-cd/github/pat/homelab-ghcr-argocd"
-    secret-type: repository
+    secret-type: repo-creds
 
   - name: argo-apps
     type: git
