@@ -7,12 +7,13 @@ repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 repositories:
   - name: ghcr-charts
-    type: oci
-    url: oci://ghcr.io/raiyajin/charts
+    type: helm
     project: apps
+    url: ghcr.io/raiyajin/charts
+    enableOCI: true
     authType: pat
     vaultPath: "kubernetes/talos-cluster/argo-cd/github/pat/homelab-ghcr-argocd"
-    secret-type: repo-creds
+    secret-type: repository
 
   - name: argo-apps
     type: git

@@ -19,6 +19,10 @@ spec:
         url: {{ .url | quote }}
         type: {{ .type | quote }}
         project: {{ .project | quote }}
+        {{- if eq .type "helm" }}
+        name: {{ .name }}
+        enableOCI: {{ .enableOCI | quote }}
+        {{- end }}
 
         {{- /* GitHub App Template Fields */}}
         {{- if eq .authType "githubApp" }}
