@@ -205,6 +205,17 @@ data "talos_machine_configuration" "configuration" {
           wipe  = true
         }
 
+        disks = each.value.role == "worker" ? [
+          {
+            device = "/dev/sdb"
+            partitions = [
+              {
+                mountpoint = "/var/mnt/storage"
+              }
+            ]
+          }
+        ] : []
+
         network = {
           interfaces = [
             for v in local.network_interfaces[each.value.role] : {

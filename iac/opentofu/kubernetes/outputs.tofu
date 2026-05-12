@@ -7,12 +7,12 @@ output "bootstrapped_controlplane_ips" {
 }
 
 output "kubeconfig" {
-  value     = talos_cluster_kubeconfig.this.kubernetes_client_configuration
+  value     = local.kubeconfig
   sensitive = true
 }
 
 output "talosconfig" {
-  value     = local.kubeconfig
+  value     = talos_cluster_kubeconfig.this.client_configuration
   sensitive = true
 }
 
