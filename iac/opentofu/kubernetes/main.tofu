@@ -95,10 +95,10 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
 
   dynamic "disk" {
     for_each = merge({
-      # Talos OS Drive (followed minimum recommandation from: https://docs.siderolabs.com/talos/v1.9/getting-started/system-requirements) 
+      # Talos OS Drive (followed recommandation from: https://docs.siderolabs.com/talos/v1.9/getting-started/system-requirements) 
       scsi0 = {
         datastore_id = "local-lvm"
-        size = 10
+        size = 100
         ssd = true
       }
     },

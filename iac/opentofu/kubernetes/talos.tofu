@@ -199,7 +199,7 @@ data "talos_machine_configuration" "configuration" {
         ]...)
         install = {
           diskSelector = {
-            size = "< 20GB"
+            size = "< 120GB"
           }
           image = lookup(each.value, "gpu", null) != null ? data.talos_image_factory_urls.this["nvidia_gpu"].urls.installer_secureboot : data.talos_image_factory_urls.this["base"].urls.installer_secureboot
           wipe  = true
