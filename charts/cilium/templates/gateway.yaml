@@ -3,14 +3,14 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: {{ $name }}
-  namespace: kube-system
+  namespace: {{ .namespace | default $.Release.Namespace }}
   annotations:
     cert-manager.io/cluster-issuer: "openbao-homelab"
 spec:
   gatewayClassName: cilium
   addresses:
-    {{- toYaml $config.addresses | nindent 4 }}
+    {{- toYaml .addresses | nindent 4 }}
   listeners:
-    {{- toYaml $config.listeners | nindent 4 }}
+    {{- toYaml .listeners | nindent 4 }}
 ---
 {{- end }}

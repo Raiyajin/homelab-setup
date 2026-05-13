@@ -65,7 +65,7 @@ cilium:
 loadBalancers:
   internal: 
     blocks:
-      - cidr: "10.50.0.201/32"
+      - cidr: "10.50.0.201/29"
   # public: 
   #   blocks:
   #     - cidr: "10.50.0.210/32"
