@@ -5,7 +5,7 @@ metadata:
   name: {{ $name }}
   namespace: {{ .namespace | default $.Release.Namespace }}
   annotations:
-    cert-manager.io/cluster-issuer: "openbao-homelab"
+    cert-manager.io/cluster-issuer: {{ .certIssuer }}
 spec:
   gatewayClassName: cilium
   addresses:

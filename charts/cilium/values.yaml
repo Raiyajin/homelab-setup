@@ -66,12 +66,13 @@ loadBalancers:
   internal: 
     blocks:
       - cidr: "10.50.0.201/29"
-  # public: 
-  #   blocks:
-  #     - cidr: "10.50.0.210/32"
+  public: 
+    blocks:
+      - cidr: "10.50.0.209/29"
 
 gateway:
-  internal: 
+  internal:
+    certIssuer: "openbao-homelab"
     addresses:
     - type: IPAddress
       value: "10.50.0.201"
