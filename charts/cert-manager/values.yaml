@@ -1,6 +1,6 @@
 global:
   namespace: "tools"
-  ca-secret-name: internal-ca
+  caSecret: internal-ca
 
 cert-manager:
   crds:
@@ -9,3 +9,9 @@ cert-manager:
 
   config:
     enableGatewayAPI: true
+
+cert-manager-webhook-ovh:
+  groupName: "acme.raiyajin.homelab.internal"
+
+  certManager:
+    namespace: tools
