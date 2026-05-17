@@ -24,10 +24,10 @@ spec:
               authenticationMethod: application
               applicationKeyRef:
                 name: ovh-api
-                key: application-key
+                key: api-key
               applicationSecretRef:
                 name: ovh-api
-                key: application-secret
+                key: api-secret
               applicationConsumerKeyRef:
                 name: ovh-api
                 key: consumer-key
