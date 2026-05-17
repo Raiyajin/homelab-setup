@@ -21,12 +21,13 @@ spec:
             config:
               # The OVH API endpoint for Europe
               endpoint: ovh-eu
+              authenticationMethod: application
               applicationKeyRef:
                 name: ovh-api
                 key: application-key
               applicationSecretRef:
                 name: ovh-api
                 key: application-secret
-              consumerKeyRef:
+              applicationConsumerKeyRef:
                 name: ovh-api
                 key: consumer-key
