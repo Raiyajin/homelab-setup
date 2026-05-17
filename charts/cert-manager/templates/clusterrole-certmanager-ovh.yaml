@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-webhook-ovh-access
+rules:
+- apiGroups: [{{ index .Values "cert-manager-webhook-ovh" "groupName" }}]
+  resources: ["ovh"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-webhook-ovh-access
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-webhook-ovh-access
+subjects:
+- kind: ServiceAccount
+  name: {{ .Chart.Name }}-cert-manager
+  namespace: {{ .Release.Namespace }}
+- kind: ServiceAccount
+  name: {{ .Chart.Name }}-cert-manager-webhook-ovh
+  namespace: {{ .Release.Namespace }}
