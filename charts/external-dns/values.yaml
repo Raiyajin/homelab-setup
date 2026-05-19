@@ -82,6 +82,12 @@ ovh:
          name: ovh-api
          key: dns-zone
 
+    - name: EXTERNAL_DNS_DEFAULT_TARGETS
+      valueFrom:
+       secretKeyRef:
+         name: ovh-api
+         key: target-ip
+
     - name: OVH_APPLICATION_KEY
       valueFrom:
        secretKeyRef:
@@ -99,3 +105,6 @@ ovh:
        secretKeyRef:
          name: ovh-api
          key: consumer-key
+  
+  extraArgs:
+    - --force-default-targets
