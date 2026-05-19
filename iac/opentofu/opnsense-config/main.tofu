@@ -179,7 +179,7 @@ resource "opnsense_firewall_filter" "dns" {
     }
 
     destination = {
-      net  = "${each.value.interface}ip"
+      net  = "any"
       port = 53
     }
 
@@ -191,6 +191,7 @@ resource "opnsense_firewall_filter" "public" {
   for_each = {
     "http" = { protocol = "TCP", port = 80 }
     "https" = { protocol = "TCP", port = 443 }
+    "https_alternate" = { protocol = "TCP", port = 8443 }
     "ping" = { protocol = "ICMP", port = null }
   }
   enabled     = true
