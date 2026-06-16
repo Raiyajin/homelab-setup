@@ -4,6 +4,16 @@ nvdp:
 
   deviceDiscoveryStrategy: "nvml"
 
+  config:
+    map:
+      default: |-
+        version: v1
+        sharing:
+          timeSlicing:
+            resources:
+            - name: nvidia.com/gpu
+              replicas: 4
+
   securityContext:
     capabilities:
       add:
