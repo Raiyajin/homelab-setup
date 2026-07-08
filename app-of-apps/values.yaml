@@ -54,6 +54,10 @@ apps:
     namespace: longhorn-system
     project: infrastructure
 
+  cloudflare-tunnel:
+    namespace: cloudflare
+    project: infrastructure
+
   homelab-argo-apps:
     namespace: argocd
     project: apps
