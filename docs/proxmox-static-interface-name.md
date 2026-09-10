@@ -70,7 +70,7 @@ After browsing a little, I found over Proxmox Forum, a post named "The Joys of S
 
 Jebbam in the original post provided a script to automate it, here is the one I made based upon that script
 
-> ![NOTE]
+> [!NOTE]
 > The script render the current name as static for all future boot, so make sure you're fine with the current name of your interface
 
 ```bash
