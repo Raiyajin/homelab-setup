@@ -23,6 +23,14 @@ repositories:
     vaultPath: "kubernetes/talos-cluster/argo-cd/github/github-apps/homelab-infra-argocd"
     secret-type: repository
 
+  - name: w101
+    type: git
+    project: w101
+    url: https://github.com/mythic-wizards/argo-apps.git
+    authType: githubApp
+    vaultPath: "kubernetes/talos-cluster/argo-cd/github/github-apps/mythic-wizards-argocd"
+    secret-type: repository
+
 projects:
   infrastructure:
     namespace: '*'
@@ -33,6 +41,10 @@ projects:
     sourceRepos:
       - https://github.com/Raiyajin/homelab-argo-apps.git
       - ghcr.io/raiyajin/charts
+  w101:
+    namespace: 'w101'
+    sourceRepos:
+      - https://github.com/mythic-wizards/argo-apps.git
 
 argo-cd:
 
