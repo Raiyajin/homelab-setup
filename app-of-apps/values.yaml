@@ -64,6 +64,12 @@ apps:
     repoURL: https://github.com/Raiyajin/homelab-argo-apps.git
     path: app-of-apps
 
+  mythic-wizards-argo-apps:
+    namespace: argocd
+    project: apps
+    repoURL: https://github.com/mythic-wizards/homelab-argo-apps.git
+    path: app-of-apps
+
 repoURL: https://github.com/Raiyajin/homelab-setup.git
 
 defaults:
