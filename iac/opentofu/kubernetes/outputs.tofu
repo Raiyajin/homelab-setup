@@ -2,7 +2,7 @@ output "controlplane_ips" {
   value = proxmox_virtual_environment_vm.kubernetes["k8s-cp-01"].ipv4_addresses
 }
 
-output "bootstrapped_controlplane_ips" {
+output "bootstrapped_controlplane_ip" {
   value = local.bootstrapped_controlplane_ip
 }
 

@@ -11,8 +11,10 @@ spec:
     - {{ . }}
     {{- end }}
   destinations:
-    - namespace: '{{ $project.namespace }}'
-      server: '*'
+    {{- range $project.destinations }}
+    - namespace: {{ .namespace | quote }}
+      server: {{ .server | default "*" | quote }}    
+    {{- end }}
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'

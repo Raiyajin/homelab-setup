@@ -64,7 +64,7 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
     flags = ["+aes"]
   }
   memory {
-    dedicated = 4096
+    dedicated = 8192
   }
 
   # Network interfaces

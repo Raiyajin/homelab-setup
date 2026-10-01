@@ -34,7 +34,7 @@ provider "proxmox" {
 provider "talos" {}
 
 provider "kubernetes" {
-  host                   = local.kubeconfig.host
+  host                   = "https://${local.bootstrapped_controlplane_ip}:6443"
   client_certificate     = base64decode(local.kubeconfig.client_certificate)
   client_key             = base64decode(local.kubeconfig.client_key)
   cluster_ca_certificate = base64decode(local.kubeconfig.ca_certificate)

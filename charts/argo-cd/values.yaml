@@ -33,16 +33,20 @@ repositories:
 
 projects:
   infrastructure:
-    namespace: '*'
+    destinations:
+      - namespace: '*'
     sourceRepos:
       - https://github.com/kubernetes-sigs/gateway-api.git
   apps:
-    namespace: '!kube-system'
+    destinations:
+      - namespace: '!kube-system'
     sourceRepos:
       - https://github.com/Raiyajin/homelab-argo-apps.git
       - ghcr.io/raiyajin/charts
   w101:
-    namespace: 'wiz101'
+    destinations:
+      - namespace: 'wiz101'
+      - namespace: 'argocd'
     sourceRepos:
       - https://github.com/mythic-wizards/argo-apps.git
 

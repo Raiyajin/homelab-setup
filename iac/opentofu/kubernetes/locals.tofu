@@ -14,7 +14,7 @@ locals {
       id        = 500,
       node_name = "nas",
       cpu       = { cores = 2, sockets = 1 },
-      memory    = 4096,
+      memory    = 8192,
       role      = "controlplane"
     }
     "k8s-wk-01" = {
@@ -23,7 +23,7 @@ locals {
       # GPU mapping name
       gpu    = { mapping = "rtx4070" }
       cpu    = { cores = 4, sockets = 1 },
-      memory = 8192,
+      memory = 16384,
       role   = "worker"
     }
     "k8s-wk-02" = {

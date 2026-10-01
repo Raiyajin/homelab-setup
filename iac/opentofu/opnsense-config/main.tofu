@@ -447,3 +447,40 @@ resource "opnsense_firewall_filter" "worker_controlplane" {
     log = false
   }
 }
+
+
+resource "opnsense_firewall_filter" "worker_public" {
+  for_each = {
+    "cloudflare_quic" = { protocol = "UDP", port = 7844 }
+  }
+  enabled     = true
+  description = "Allow ${each.key} from k8s workers to k8s controlplane"
+
+  interface = {
+    interface = [
+      local.dhcp_subnets["k8s_wk"].interface,
+    ]
+  }
+
+  categories = [
+    opnsense_firewall_category.category["talos"].id
+  ]
+
+  filter = {
+    quick     = true
+    action    = "pass"
+    direction = "in"
+    protocol  = each.value.protocol
+
+    source = {
+      net = local.dhcp_subnets["k8s_wk"].interface
+    }
+
+    destination = {
+      net  = "any"
+      port = each.value.port
+    }
+
+    log = false
+  }
+}

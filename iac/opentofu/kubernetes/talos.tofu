@@ -271,6 +271,10 @@ resource "talos_machine_configuration_apply" "apply" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.configuration[each.key].machine_configuration
   node                        = local.proxmox_vm_node_ips[each.key]
+
+  lifecycle {
+    ignore_changes = [machine_configuration_input]
+  }
 }
 
 resource "talos_machine_bootstrap" "this" {
