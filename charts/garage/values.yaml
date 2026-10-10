@@ -271,30 +271,16 @@ garage:
     # -- Dict of keys to create
     # keyId format: must start with 'GK' followed by 24 hex-encoded characters (12 bytes)
     # secretKey format: must be 64 hex-encoded characters (32 bytes)
-    keys: {}
-    # Examples:
-    # 1. Stored directly in the values.yaml
-    # my-key:
-    #   keyId: GK12345678901234567890abcd
-    #   secretKey: 123456789012345678901234567890123456789012345678901234567890abcd
-    #   buckets:
-    #     # String format - grants read+write
-    #     - my-bucket
-    #     # Object format - explicit per-bucket permissions
-    #     - name: my-other-bucket
-    #       read: true
-    #       write: true
-    #       owner: false  # optional, grants owner permissions
-    # 2. Use an existing secret in kubernetes (containing the keyId and secretKey)
-    admin:
-      secretName: garage-access-credentials
-      keyId: access-key
-      secretKey: secret-key
-      buckets:
-        - name: loki
-          read: true
-          write: true
-          owner: true
+    keys:
+      admin:
+        secretName: garage-access-credentials
+        keyId: access-key
+        secretKey: secret-key
+        buckets:
+          - name: loki
+            read: true
+            write: true
+            owner: true
 
     # -- Extra commands to run
     extraCommands: []
