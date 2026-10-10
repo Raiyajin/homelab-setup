@@ -1,0 +1,135 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: true
+    existingSecret: "grafana-admin-credentials"
+    adminUserKey: "user"
+    adminPasswordKey: "password"
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.observability.svc.cluster.local
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: "trace_id=(\\w+)"
+              name: TraceID
+              url: "$${__value.raw}"
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.observability.svc.cluster.local
+        jsonData:
+          httpMethod: GET
+          serviceMap:
+            datasourceUid: prometheus
+
+  prometheus:
+    prometheusSpec:
+      retention: 7d
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 20Gi
+
+loki:
+  deploymentMode: SimpleScalable
+  backend:
+    replicas: 1
+  read:
+    replicas: 1
+  write:
+    replicas: 1
+  storage:
+    type: filesystem
+  schemaConfig:
+    configs:
+      - from: 2026-01-01
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+
+tempo:
+  tempo:
+    multitenancyEnabled: false
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/wal
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+          http:
+            endpoint: "0.0.0.0:4318"
+
+alloy:
+  controller:
+    type: daemonset
+  configMap:
+    content: |
+        // Collect Kubernetes Pod Logs and ship to Loki
+        discovery.kubernetes "pods" {
+          role = "pod"
+        }
+
+        discovery.relabel "pod_logs" {
+          targets = discovery.kubernetes.pods.targets
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            action = "replace"
+            target_label = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            action = "replace"
+            target_label = "pod"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_container_name"]
+            action = "replace"
+            target_label = "container"
+          }
+        }
+
+        loki.source.kubernetes "pod_logs" {
+          targets    = discovery.relabel.pod_logs.output
+          forward_to = [loki.write.endpoint.receiver]
+        }
+
+        loki.write "endpoint" {
+          endpoint {
+            url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+          }
+        }
+
+        // Receive OTLP Traces from Applications and forward to Tempo
+        otelcol.receiver.otlp "default" {
+          grpc {
+            endpoint = "0.0.0.0:4317"
+          }
+          http {
+            endpoint = "0.0.0.0:4318"
+          }
+          output {
+            traces = [otelcol.exporter.otlp.tempo.input]
+          }
+        }
+
+        otelcol.exporter.otlp "tempo" {
+          client {
+            endpoint = "tempo.observability.svc.cluster.local:4317"
+            tls {
+              insecure = true
+              insecure_skip_verify = true
+            }
+          }
+        }
