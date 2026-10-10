@@ -92,7 +92,7 @@ garage:
     # -- Switchable to DaemonSet
     kind: StatefulSet
     # -- Number of StatefulSet replicas/garage nodes to start
-    replicaCount: 1
+    replicaCount: 2
     # -- If using statefulset, allow Parallel or OrderedReady (default)
     podManagementPolicy: OrderedReady
 
@@ -257,9 +257,9 @@ garage:
 
     layout:
       # -- Enable layout configuration
-      enabled: false
+      enabled: true
       # -- Zone to assign nodes to
-      zone: dc1
+      zone: euw3
       # -- Capacity to assign to nodes. If empty, defaults to persistence.data.size
       capacity: ""
 

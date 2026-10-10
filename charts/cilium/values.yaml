@@ -137,3 +137,18 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: garage
+
+    - name: garage-web-subdomains-https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.web.garage.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: garage-web-subdomains-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: garage
