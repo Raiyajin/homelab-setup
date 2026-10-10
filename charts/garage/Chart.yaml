@@ -1,0 +1,11 @@
+apiVersion: v2
+name: garage
+description: A Helm chart for Garage, an S3-compatible object store
+type: application
+version: 0.1.0
+appVersion: "v2.4.1"
+
+dependencies:
+  - name: garage
+    version: 0.8.0
+    repository: https://datahub-local.github.io/garage-helm

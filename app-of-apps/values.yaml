@@ -57,10 +57,19 @@ apps:
   cloudflare-tunnel:
     namespace: cloudflare
     project: infrastructure
-  
+
+  garage:
+    namespace: garage
+    project: infrastructure
+
   observability:
     namespace: observability
     project: infrastructure
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
+        - ServerSideApply=true
 
   homelab-argo-apps:
     namespace: argocd
