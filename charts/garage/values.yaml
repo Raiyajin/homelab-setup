@@ -186,7 +186,7 @@ garage:
       # -- Route for Web buckets
       web:
         # -- Flag to control if HTTP route should be created
-        enabled: false
+        enabled: true
         # -- Additional labels for the HTTPRoute
         labels: {}
         # -- Additional annotations for the HTTPRoute
@@ -199,8 +199,8 @@ garage:
         parentRefs:
         - group: gateway.networking.k8s.io
           kind: Gateway
-          name: example-gateway
-          namespace: gateway-namespace
+          name: internal
+          namespace: kube-system 
 
         # -- Matches for the default rule
         matches:
