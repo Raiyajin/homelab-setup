@@ -200,7 +200,7 @@ garage:
         - group: gateway.networking.k8s.io
           kind: Gateway
           name: internal
-          namespace: kube-system 
+          namespace: kube-system
 
         # -- Matches for the default rule
         matches:
@@ -253,20 +253,20 @@ garage:
   # -- Garage Cluster configuration
   clusterConfig:
     # -- Enable the cluster configuration job
-    enabled: false
+    enabled: true
 
     layout:
       # -- Enable layout configuration
-      enabled: true
+      enabled: false
       # -- Zone to assign nodes to
       zone: dc1
       # -- Capacity to assign to nodes. If empty, defaults to persistence.data.size
       capacity: ""
 
     # -- List of buckets to create
-    buckets: []
-    # - name: my-bucket
-    #   public: false
+    buckets:
+    - name: loki
+      public: false
 
     # -- Dict of keys to create
     # keyId format: must start with 'GK' followed by 24 hex-encoded characters (12 bytes)
@@ -286,13 +286,15 @@ garage:
     #       write: true
     #       owner: false  # optional, grants owner permissions
     # 2. Use an existing secret in kubernetes (containing the keyId and secretKey)
-    # my-existing-key:
-    #   secretName: someSecretWithKeys
-    #   keyId: keyIdA
-    #   secretKey: secretKeyA
-    #   buckets:
-    #     - name: my-bucket
-    #       read: true  # read-only key
+    admin:
+      secretName: garage-access-credentials
+      keyId: access-key
+      secretKey: secret-key
+      buckets:
+        - name: loki
+          read: true
+          write: true
+          owner: true
 
     # -- Extra commands to run
     extraCommands: []
