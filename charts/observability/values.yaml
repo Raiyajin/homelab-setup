@@ -1,4 +1,9 @@
 promstack:
+  crds:
+    enabled: true
+    upgradeJob:
+      enabled: true
+
   grafana:
     enabled: true
     existingSecret: "grafana-admin-credentials"
