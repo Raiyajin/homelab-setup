@@ -1,4 +1,4 @@
-kube-prometheus-stack:
+promstack:
   grafana:
     enabled: true
     existingSecret: "grafana-admin-credentials"
