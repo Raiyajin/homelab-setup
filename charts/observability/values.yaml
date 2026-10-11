@@ -6,9 +6,10 @@ promstack:
 
   grafana:
     enabled: true
-    existingSecret: "grafana-admin-credentials"
-    adminUserKey: "user"
-    adminPasswordKey: "password"
+    admin:
+      existingSecret: "grafana-admin-credentials"
+      userKey: "user"
+      passwordKey: "password"
     additionalDataSources:
       - name: Loki
         type: loki
