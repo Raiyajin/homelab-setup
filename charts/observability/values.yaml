@@ -36,26 +36,47 @@ kube-prometheus-stack:
                 storage: 20Gi
 
 loki:
+  extraEnvFrom:
+    - secretRef:
+        name: garage-access-credentials
   loki:
     schemaConfig:
       configs:
-        - from: "2024-04-01"
+        - from: "2026-01-01"
           store: tsdb
           object_store: s3
           schema: v13
           index:
             prefix: loki_index_
             period: 24h
-    ingester:
-      chunk_encoding: snappy
-    querier:
-      # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
-      max_concurrent: 4
+    storage_config:
+      aws:
+        region: "garage"
+        bucketnames: "loki"
+        s3forcepathstyle: false
     pattern_ingester:
       enabled: true
     limits_config:
       allow_structured_metadata: true
       volume_enabled: true
+      retention_period: 672h # 28 days retention
+    querier:
+      max_concurrent: 4
+
+    storage:
+      type: s3
+      bucketNames:
+        chunks: loki
+        ruler: loki
+        admin: loki
+      s3:
+        endpoint: https://s3.garage.homelab.internal
+        bucketnames: loki
+        s3ForcePathStyle: true
+        insecure: false
+        # Pass environment variable references here
+        accessKeyId: "${LOKI_S3_ACCESS_KEY}"
+        secretAccessKey: "${LOKI_S3_SECRET_KEY}"
 
   deploymentMode: SimpleScalable
 
@@ -66,10 +87,9 @@ loki:
   write:
     replicas: 1
 
-  ignoreMinioDeprecation: true  # Temporary workaround – MinIO will be removed 2026-10-31
-  # Enable minio for storage
+  # Disable minio storage
   minio:
-    enabled: true
+    enabled: false
 
 tempo:
   tempo:
