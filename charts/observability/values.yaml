@@ -48,6 +48,12 @@ promstack:
           serviceMap:
             datasourceUid: prometheus
 
+    extraConfigmapMounts:
+    - name: ca-trust-bundle
+      mountPath: /etc/ssl/certs/ca-certificates.crt
+      configMap: ca-trust-bundle
+      readOnly: true
+
   prometheus:
     prometheusSpec:
       retention: 7d
