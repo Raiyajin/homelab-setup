@@ -7,6 +7,14 @@ routes:
     service:
       name: observability-grafana
       port: 80
+  tempo:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "tempo.homelab.internal"
+    service:
+      name: observability-tempo
+      port: 3200
 
 promstack:
   crds:
@@ -54,8 +62,19 @@ promstack:
 loki:
   extraEnvFrom:
     - secretRef:
-        name: garage-access-credentials
+        name: s3-access-credentials-admin
   loki:
+    structuredConfig:
+      storage_config:
+        named_stores:
+          aws:
+            s3-loki:
+              endpoint: "s3.homelab.internal"
+              bucketnames: loki
+              access_key_id: "${LOKI_S3_SECRET_KEY}"
+              secret_access_key: "${LOKI_S3_SECRET_KEY}"
+              s3forcepathstyle: true
+              insecure: false
     schemaConfig:
       configs:
         - from: "2026-01-01"
@@ -65,11 +84,6 @@ loki:
           index:
             prefix: loki_index_
             period: 24h
-    storage_config:
-      aws:
-        region: "garage"
-        bucketnames: "loki"
-        s3forcepathstyle: false
     pattern_ingester:
       enabled: true
     limits_config:
@@ -86,7 +100,7 @@ loki:
         ruler: loki
         admin: loki
       s3:
-        endpoint: https://s3.garage.homelab.internal
+        endpoint: https://s3.homelab.internal
         bucketnames: loki
         s3ForcePathStyle: true
         insecure: false
