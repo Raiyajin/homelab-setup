@@ -137,3 +137,18 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: observability
+
+    - name: tempo-https
+      protocol: HTTPS
+      port: 3200
+      hostname: "tempo.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: tempo-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
