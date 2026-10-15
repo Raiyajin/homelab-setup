@@ -1,0 +1,16 @@
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: ca-trust-bundle
+spec:
+  sources:
+  - useDefaultCAs: true
+  - secret:
+      name: {{ index .Values.global "caSecret" }}
+      includeAllKeys: true
+  target:
+    configMap:
+      key: "trust-bundle.pem"
+    namespaceSelector:
+      matchLabels:
+        cert-manager.io/trust: "enabled"

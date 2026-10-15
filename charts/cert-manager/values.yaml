@@ -15,3 +15,8 @@ cert-manager-webhook-ovh:
 
   certManager:
     namespace: tools
+
+trust-manager:
+  app:
+    trust:
+      namespace: tools
