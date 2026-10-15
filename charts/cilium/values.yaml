@@ -108,50 +108,20 @@ gateway:
             matchLabels:
               kubernetes.io/metadata.name: longhorn-system
 
-    - name: garage-s3-https
+    - name: seaweedfs-s3-https
       protocol: HTTPS
       port: 443
-      hostname: "s3.garage.homelab.internal"
+      hostname: "s3.homelab.internal"
       tls:
         mode: Terminate
         certificateRefs:
-        - name: garage-s3-tls-secret
+        - name: seaweedfs-s3-tls-secret
       allowedRoutes:
         namespaces:
           from: Selector
           selector:
             matchLabels:
-              kubernetes.io/metadata.name: garage
-
-    - name: garage-s3-subdomains-https
-      protocol: HTTPS
-      port: 443
-      hostname: "*.s3.garage.homelab.internal"
-      tls:
-        mode: Terminate
-        certificateRefs:
-        - name: garage-s3-subdomains-tls-secret
-      allowedRoutes:
-        namespaces:
-          from: Selector
-          selector:
-            matchLabels:
-              kubernetes.io/metadata.name: garage
-
-    - name: garage-web-subdomains-https
-      protocol: HTTPS
-      port: 443
-      hostname: "*.web.garage.homelab.internal"
-      tls:
-        mode: Terminate
-        certificateRefs:
-        - name: garage-web-subdomains-tls-secret
-      allowedRoutes:
-        namespaces:
-          from: Selector
-          selector:
-            matchLabels:
-              kubernetes.io/metadata.name: garage
+              kubernetes.io/metadata.name: seaweedfs
 
     - name: grafana-https
       protocol: HTTPS

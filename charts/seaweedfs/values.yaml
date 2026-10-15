@@ -1212,7 +1212,6 @@ seaweedfs:
         kind: Gateway
         name: internal
         namespace: kube-system
-        sectionName: https
       hostnames: 
       - "s3.homelab.internal"
       # Each rule may set matches, filters, timeouts and backendRefs.
