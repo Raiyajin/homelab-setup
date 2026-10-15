@@ -67,7 +67,6 @@ apps:
     project: infrastructure
     syncPolicy:
       syncOptions:
-        - CreateNamespace=true
         - RespectIgnoreDifferences=true
         - ServerSideApply=true
 
