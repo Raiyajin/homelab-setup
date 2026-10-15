@@ -1,0 +1,66 @@
+# https://github.com/seaweedfs/seaweedfs/blob/master/k8s/charts/seaweedfs/templates/s3/s3-httproute.yaml
+# In mean time for the latter to release
+{{- $s3Enabled := or .Values.seaweedfs.s3.enabled (and .Values.seaweedfs.filer.s3.enabled (not .Values.seaweedfs.allInOne.enabled)) (and .Values.seaweedfs.allInOne.enabled .Values.seaweedfs.allInOne.s3.enabled) }}
+{{- if and $s3Enabled .Values.seaweedfs.s3.httpRoute.enabled }}
+{{- $serviceName := include "seaweedfs.componentName" (list . "s3") }}
+{{- $s3Port := .Values.seaweedfs.filer.s3.port }}
+{{- if and .Values.seaweedfs.allInOne.enabled .Values.seaweedfs.allInOne.s3.enabled }}
+{{- $serviceName = include "seaweedfs.componentName" (list . "all-in-one") }}
+{{- $s3Port = .Values.seaweedfs.allInOne.s3.port | default .Values.seaweedfs.s3.port }}
+{{- else if .Values.seaweedfs.s3.enabled }}
+{{- $s3Port = .Values.seaweedfs.s3.port }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "seaweedfs.componentName" (list . "s3") }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.seaweedfs.s3.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ template "seaweedfs.name" . }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: s3
+    {{- with .Values.seaweedfs.s3.httpRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.seaweedfs.s3.httpRoute.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.seaweedfs.s3.httpRoute.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.seaweedfs.s3.httpRoute.rules | default (list dict) }}
+    - backendRefs:
+        {{- with .backendRefs }}
+        {{- toYaml . | nindent 8 }}
+        {{- else }}
+        - group: ""
+          kind: Service
+          name: {{ $serviceName }}
+          namespace: {{ $.Release.Namespace }}
+          port: {{ $s3Port }}
+          weight: 1
+        {{- end }}
+      {{- with .matches }}
+      matches:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .timeouts }}
+      timeouts:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}
