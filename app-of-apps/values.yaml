@@ -58,8 +58,8 @@ apps:
     namespace: cloudflare
     project: infrastructure
 
-  garage:
-    namespace: garage
+  seaweedfs:
+    namespace: seaweedfs
     project: infrastructure
 
   observability:
