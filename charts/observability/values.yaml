@@ -47,6 +47,10 @@ promstack:
               matcherRegex: "trace_id=(\\w+)"
               name: TraceID
               url: "$${__value.raw}"
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "infrastructure"
+
       - name: Tempo
         type: tempo
         access: proxy
