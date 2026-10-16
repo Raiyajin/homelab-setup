@@ -20,8 +20,5 @@ roleRef:
   name: cert-manager-webhook-ovh-access
 subjects:
 - kind: ServiceAccount
-  name: {{ .Chart.Name }}-cert-manager
-  namespace: {{ .Release.Namespace }}
-- kind: ServiceAccount
   name: {{ .Chart.Name }}-cert-manager-webhook-ovh
   namespace: {{ .Release.Namespace }}
