@@ -42,7 +42,7 @@ promstack:
       - name: Tempo
         type: tempo
         access: proxy
-        url: http://tempo.observability.svc.cluster.local
+        url: https://tempo.homelab.internal
         jsonData:
           httpMethod: GET
           serviceMap:

@@ -140,7 +140,7 @@ gateway:
 
     - name: tempo-https
       protocol: HTTPS
-      port: 3200
+      port: 443
       hostname: "tempo.homelab.internal"
       tls:
         mode: Terminate
