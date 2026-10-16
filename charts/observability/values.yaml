@@ -51,6 +51,7 @@ promstack:
     extraConfigmapMounts:
     - name: ca-trust-bundle
       mountPath: /etc/ssl/certs/ca-certificates.crt
+      subPath: trust-bundle.pem
       configMap: ca-trust-bundle
       readOnly: true
 
