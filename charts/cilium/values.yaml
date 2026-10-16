@@ -152,3 +152,18 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: observability
+
+    - name: loki-gateway-https
+      protocol: HTTPS
+      port: 443
+      hostname: "loki-gateway.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: loki-gateway-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability

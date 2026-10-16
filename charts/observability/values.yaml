@@ -15,6 +15,14 @@ routes:
     service:
       name: observability-tempo
       port: 3200
+  loki-gateway:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "loki-gateway.homelab.internal"
+    service:
+      name: observability-loki-gateway
+      port: 80
 
 promstack:
   crds:
@@ -32,7 +40,7 @@ promstack:
       - name: Loki
         type: loki
         access: proxy
-        url: http://loki-gateway.observability.svc.cluster.local
+        url: https://loki-gateway.homelab.internal
         jsonData:
           derivedFields:
             - datasourceUid: tempo
