@@ -153,6 +153,21 @@ gateway:
             matchLabels:
               kubernetes.io/metadata.name: observability
 
+    - name: tempo-otlp-grpc
+      protocol: HTTPS
+      port: 4317
+      hostname: "tempo.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: tempo-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+
     - name: loki-gateway-https
       protocol: HTTPS
       port: 443

@@ -31,6 +31,14 @@ routes:
     service:
       name: observability-tempo
       port: 3200
+  tempo-otlp-grpc:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "tempo.homelab.internal"
+    service:
+      name: observability-tempo
+      port: 4317
   loki-gateway:
     gateway:
       name: internal
@@ -228,62 +236,77 @@ tempo:
 alloy:
   controller:
     type: daemonset
-  configMap:
-    content: |
-        // Collect Kubernetes Pod Logs and ship to Loki
-        discovery.kubernetes "pods" {
-          role = "pod"
-        }
 
-        discovery.relabel "pod_logs" {
-          targets = discovery.kubernetes.pods.targets
-          rule {
-            source_labels = ["__meta_kubernetes_namespace"]
-            action = "replace"
-            target_label = "namespace"
-          }
-          rule {
-            source_labels = ["__meta_kubernetes_pod_name"]
-            action = "replace"
-            target_label = "pod"
-          }
-          rule {
-            source_labels = ["__meta_kubernetes_pod_container_name"]
-            action = "replace"
-            target_label = "container"
-          }
-        }
+    volumes:
+      extra:
+      - name: ca-trust-bundle
+        configMap: 
+          name: ca-trust-bundle
 
-        loki.source.kubernetes "pod_logs" {
-          targets    = discovery.relabel.pod_logs.output
-          forward_to = [loki.write.endpoint.receiver]
-        }
+  alloy:
+    mounts:
+      extra:
+      - name: ca-trust-bundle
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: trust-bundle.pem
+        readOnly: true
 
-        loki.write "endpoint" {
-          endpoint {
-            url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+    configMap:
+      content: |
+          // Collect Kubernetes Pod Logs and ship to Loki
+          discovery.kubernetes "pods" {
+            role = "pod"
           }
-        }
 
-        // Receive OTLP Traces from Applications and forward to Tempo
-        otelcol.receiver.otlp "default" {
-          grpc {
-            endpoint = "0.0.0.0:4317"
-          }
-          http {
-            endpoint = "0.0.0.0:4318"
-          }
-          output {
-            traces = [otelcol.exporter.otlp.tempo.input]
-          }
-        }
-
-        otelcol.exporter.otlp "tempo" {
-          client {
-            endpoint = "tempo.observability.svc.cluster.local:4317"
-            tls {
-              insecure = true
-              insecure_skip_verify = true
+          discovery.relabel "pod_logs" {
+            targets = discovery.kubernetes.pods.targets
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              action = "replace"
+              target_label = "namespace"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              action = "replace"
+              target_label = "pod"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              action = "replace"
+              target_label = "container"
             }
           }
-        }
+
+          loki.source.kubernetes "pod_logs" {
+            targets    = discovery.relabel.pod_logs.output
+            forward_to = [loki.write.endpoint.receiver]
+          }
+
+          loki.write "endpoint" {
+            endpoint {
+              url = "https://loki-gateway.homelab.internal/loki/api/v1/push"
+            }
+          }
+
+          // Receive OTLP Traces from Applications and forward to Tempo
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+            }
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+            output {
+              traces = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "tempo.homelab.internal:4317"
+              tls {
+                insecure = false
+                insecure_skip_verify = false
+              }
+            }
+          }
