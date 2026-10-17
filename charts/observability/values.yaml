@@ -1,4 +1,20 @@
 routes:
+  prometheus:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "prometheus.homelab.internal"
+    service:
+      name: observability-promstack-prometheus
+      port: 9090
+  alertmanager:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "alertmanager.homelab.internal"
+    service:
+      name: observability-promstack-alertmanager
+      port: 9093
   grafana:
     gateway:
       name: internal
@@ -36,7 +52,73 @@ promstack:
       existingSecret: "grafana-admin-credentials"
       userKey: "user"
       passwordKey: "password"
+
+    sidecar:
+      datasources:
+        enabled: true
+        defaultDatasourceEnabled: true
+        isDefaultDatasource: true
+
+        name: Prometheus
+        uid: prometheus
+
+        ## Extra jsonData properties to add to the datasource
+        # extraJsonData:
+        #  prometheusType: Prometheus
+
+        ## URL of prometheus datasource
+        ##
+        url: https://prometheus.homelab.internal
+
+        ## Prometheus request timeout in seconds
+        # timeout: 30
+
+        ## Query parameters to add, as a URL-encoded string,
+        ## to query Prometheus
+        # customQueryParameters: ""
+
+        # If not defined, will use prometheus.prometheusSpec.scrapeInterval or its default
+        # defaultDatasourceScrapeInterval: 15s
+
+        ## Annotations for Grafana datasource configmaps
+        ##
+        annotations: {}
+
+        ## Set method for HTTP to send query to datasource
+        httpMethod: POST
+
+        ## Create datasource for each Pod of Prometheus StatefulSet;
+        ## this uses by default the headless service `prometheus-operated` which is
+        ## created by Prometheus Operator. In case you deployed your own Service for your
+        ## Prometheus instance, you can specify it with the field `prometheusServiceName`
+        ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/0fee93e12dc7c2ea1218f19ae25ec6b893460590/pkg/prometheus/statefulset.go#L255-L286
+        createPrometheusReplicasDatasources: false
+        prometheusServiceName: prometheus-operated
+        label: grafana_datasource
+        labelValue: "1"
+
+        ## Field with internal link pointing to existing data source in Grafana.
+        ## Can be provisioned via additionalDataSources
+        exemplarTraceIdDestinations: {}
+          # datasourceUid: Jaeger
+          # traceIdLabelName: trace_id
+          # urlDisplayLabel: View traces
+        alertmanager:
+          enabled: false
+          name: Alertmanager
+          uid: alertmanager
+          handleGrafanaManagedAlerts: false
+          implementation: prometheus
+
     additionalDataSources:
+      - name: Alertmanager
+        type: alertmanager
+        access: proxy
+        url: https://alertmanager.homelab.internal
+        jsonData:
+          handleGrafanaManagedAlerts: false
+          implementation: prometheus
+
       - name: Loki
         type: loki
         access: proxy

@@ -167,3 +167,33 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: observability
+
+    - name: prometheus-https
+      protocol: HTTPS
+      port: 443
+      hostname: "prometheus.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: prometheus-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+
+    - name: alertmanager-https
+      protocol: HTTPS
+      port: 443
+      hostname: "alertmanager.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: alertmanager-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
