@@ -285,6 +285,7 @@ alloy:
           loki.write "endpoint" {
             endpoint {
               url = "https://loki-gateway.homelab.internal/loki/api/v1/push"
+              tenant_id = "infrastructure"
             }
           }
 
