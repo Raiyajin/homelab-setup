@@ -48,6 +48,14 @@ routes:
     service:
       name: observability-loki-gateway
       port: 80
+  alloy:
+    gateway:
+      name: internal
+      namespace: kube-system
+    host: "alloy.homelab.internal"
+    service:
+      name: observability-alloy
+      port: 12345
 
 promstack:
   crds:

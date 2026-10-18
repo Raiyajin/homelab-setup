@@ -212,3 +212,18 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: observability
+
+    - name: alloy-https
+      protocol: HTTPS
+      port: 443
+      hostname: "alloy.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: alloy-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
