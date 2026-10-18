@@ -55,6 +55,7 @@ cilium:
 
   gatewayAPI:
     enabled: true
+    enableAlpn: true
     hostNetwork:
       enabled: false
 

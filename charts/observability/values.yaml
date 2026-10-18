@@ -283,6 +283,7 @@ alloy:
       port: 4317
       targetPort: 4317
       protocol: "TCP"
+      appProtocol: "kubernetes.io/h2c"
     - name: "otlp-http"
       port: 4318
       targetPort: 4318
@@ -345,8 +346,6 @@ alloy:
               tls {
                 insecure = false
                 insecure_skip_verify = false
-                ca_file = "/etc/ssl/certs/ca-certificates.crt"
-                server_name = "tempo.homelab.internal"
               }
             }
           }
