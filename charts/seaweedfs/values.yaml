@@ -1045,6 +1045,9 @@ seaweedfs:
       - name: loki
         anonymousRead: false
         ttl: 7d
+      - name: tempo
+        anonymousRead: false
+        ttl: 7d
       # - name: test-bucket-a
       #   anonymousRead: true
       #   ttl: 7d

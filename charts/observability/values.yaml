@@ -75,8 +75,6 @@ promstack:
         # extraJsonData:
         #  prometheusType: Prometheus
 
-        ## URL of prometheus datasource
-        ##
         url: https://prometheus.homelab.internal
 
         ## Prometheus request timeout in seconds
@@ -219,12 +217,32 @@ loki:
     enabled: false
 
 tempo:
+  extraVolumes:
+  - name: ca-trust-bundle
+    configMap:
+      name: ca-trust-bundle
+
   tempo:
+    extraEnvFrom:
+    - secretRef:
+        name: s3-access-credentials-admin
+
+
+    extraVolumeMounts:
+    - name: ca-trust-bundle
+      mountPath: /etc/ssl/certs/ca-certificates.crt
+      subPath: trust-bundle.pem
+      readOnly: true
+
     multitenancyEnabled: false
     storage:
       trace:
-        backend: local
-        local:
+        backend: s3
+        s3:
+          endpoint: s3.homelab.internal
+          bucket: tempo
+          insecure: false
+        wal:
           path: /var/tempo/wal
     receivers:
       otlp:
