@@ -32,6 +32,7 @@ routes:
       name: observability-tempo
       port: 3200
   tempo-otlp-grpc:
+    kind: GRPCRoute
     gateway:
       name: internal
       namespace: kube-system

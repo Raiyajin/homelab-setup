@@ -1,6 +1,6 @@
 {{- range $name, $route := .Values.routes }}
 apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+kind: {{ $route.kind | default "HTTPRoute" }}
 metadata:
   name: {{ $name }}
   {{- with $route.gateway.labels }}
@@ -20,12 +20,14 @@ spec:
     - {{ $route.host | quote }}
   {{- end }}
   rules:
-    - matches:
+    - backendRefs:
+        - name: {{ $route.service.name }}
+          port: {{ $route.service.port }}
+      {{- if or (empty $route.kind) (eq $route.kind "HTTPRoute") }}
+      matches:
         - path:
             type: PathPrefix
             value: "/"
-      backendRefs:
-        - name: {{ $route.service.name }}
-          port: {{ $route.service.port }}
+      {{- end }}
 ---
 {{- end }}
