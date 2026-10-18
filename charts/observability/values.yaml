@@ -278,6 +278,16 @@ alloy:
         subPath: trust-bundle.pem
         readOnly: true
 
+    extraPorts:
+    - name: "otlp-grpc"
+      port: 4317
+      targetPort: 4317
+      protocol: "TCP"
+    - name: "otlp-http"
+      port: 4318
+      targetPort: 4318
+      protocol: "TCP"
+
     configMap:
       content: |
           // Collect Kubernetes Pod Logs and ship to Loki
@@ -335,6 +345,8 @@ alloy:
               tls {
                 insecure = false
                 insecure_skip_verify = false
+                ca_file = "/etc/ssl/certs/ca-certificates.crt"
+                server_name = "tempo.homelab.internal"
               }
             }
           }
