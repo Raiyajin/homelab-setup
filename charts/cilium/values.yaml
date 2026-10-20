@@ -139,21 +139,6 @@ gateway:
             matchLabels:
               kubernetes.io/metadata.name: observability
 
-    - name: tempo-https
-      protocol: HTTPS
-      port: 443
-      hostname: "tempo.homelab.internal"
-      tls:
-        mode: Terminate
-        certificateRefs:
-        - name: tempo-tls-secret
-      allowedRoutes:
-        namespaces:
-          from: Selector
-          selector:
-            matchLabels:
-              kubernetes.io/metadata.name: observability
-
     - name: tempo-otlp-grpc
       protocol: HTTPS
       port: 4317
@@ -216,7 +201,7 @@ gateway:
 
     - name: alloy-https
       protocol: HTTPS
-      port: 443
+      port: 4317
       hostname: "alloy.homelab.internal"
       tls:
         mode: Terminate
