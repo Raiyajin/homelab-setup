@@ -23,14 +23,6 @@ routes:
     service:
       name: observability-grafana
       port: 80
-  tempo:
-    gateway:
-      name: internal
-      namespace: kube-system
-    host: "tempo.homelab.internal"
-    service:
-      name: observability-tempo
-      port: 3200
   tempo-otlp-grpc:
     kind: GRPCRoute
     gateway:
@@ -235,10 +227,9 @@ tempo:
     - secretRef:
         name: s3-access-credentials-admin
 
-
     extraVolumeMounts:
     - name: ca-trust-bundle
-      mountPath: /etc/ssl/certs/ca-certificates.crt
+      mountPath: /etc/ssl/certs/trust-bundle.pem
       subPath: trust-bundle.pem
       readOnly: true
 
