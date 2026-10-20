@@ -115,10 +115,10 @@ promstack:
 
         ## Field with internal link pointing to existing data source in Grafana.
         ## Can be provisioned via additionalDataSources
-        exemplarTraceIdDestinations: {}
-          # datasourceUid: Jaeger
-          # traceIdLabelName: trace_id
-          # urlDisplayLabel: View traces
+        exemplarTraceIdDestinations:
+          datasourceUid: tempo
+          traceIdLabelName: trace_id
+          urlDisplayLabel: "View in Tempo"
         alertmanager:
           enabled: false
           name: Alertmanager
