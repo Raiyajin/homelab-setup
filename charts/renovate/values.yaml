@@ -1,0 +1,29 @@
+global:
+  namespace: "renovate"
+
+renovate:
+  # Secret providing RENOVATE_TOKEN and RENOVATE_GITHUB_COM_TOKEN, see templates/external-secrets-github-token.yaml
+  existingSecret: renovate-github-token
+
+  cronjob:
+    schedule: '0 * * * *'
+    concurrencyPolicy: Forbid
+    successfulJobsHistoryLimit: 1
+    failedJobsHistoryLimit: 2
+
+  renovate:
+    config: |
+      {
+        "platform": "github",
+        "autodiscover": false,
+        "repositories": ["Raiyajin/homelab-setup"],
+        "onboarding": false,
+        "requireConfig": "required"
+      }
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi

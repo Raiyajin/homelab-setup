@@ -1,0 +1,14 @@
+apiVersion: v2
+name: renovate
+description: A Helm chart for Renovate
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.16.0"
+
+dependencies:
+  - name: renovate
+    version: 46.396.0
+    repository: https://docs.renovatebot.com/helm-charts

@@ -13,6 +13,7 @@ apps:
     type: directory
     repoURL: https://github.com/kubernetes-sigs/gateway-api.git
     path: config/crd/standard
+    # renovate: datasource=github-tags depName=kubernetes-sigs/gateway-api
     targetRevision: v1.6.3
 
   metrics-server:
@@ -60,6 +61,10 @@ apps:
 
   seaweedfs:
     namespace: seaweedfs
+    project: infrastructure
+
+  renovate:
+    namespace: renovate
     project: infrastructure
 
   observability:
