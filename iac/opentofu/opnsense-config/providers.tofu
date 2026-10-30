@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     opnsense = {
-      version = "~> 0.16.1"
+      version = "~> 0.26.0"
       source  = "browningluke/opnsense"
     }
   }
