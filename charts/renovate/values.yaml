@@ -18,7 +18,8 @@ renovate:
         "autodiscover": false,
         "repositories": ["Raiyajin/homelab-setup"],
         "onboarding": false,
-        "requireConfig": "required"
+        "requireConfig": "required",
+        "gitAuthor": "Renovate <77416101+Raiyajin@users.noreply.github.com>"
       }
 
   resources:
