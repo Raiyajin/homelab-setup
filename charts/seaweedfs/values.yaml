@@ -331,7 +331,7 @@ seaweedfs:
     # This will automatically create a job for patching Kubernetes resources if the dataDirs type is 'persistentVolumeClaim' and the size has changed.
     resizeHook:
       enabled: true
-      image: alpine/k8s:1.28.4
+      image: alpine/k8s:1.37.1
 
     # idx (the volume index) may use a separate PERSISTENT volume:
     #
@@ -2018,7 +2018,7 @@ seaweedfs:
   # For more information, visit: https://container-object-storage-interface.github.io/docs/deployment-guide
   cosi:
     enabled: false
-    image: "ghcr.io/seaweedfs/seaweedfs-cosi-driver:v0.1.2"
+    image: "ghcr.io/seaweedfs/seaweedfs-cosi-driver:v0.3.1"
     driverName: "seaweedfs.objectstorage.k8s.io"
     bucketClassName: "seaweedfs"
     # Optional parameters to pass to the default BucketClass (e.g., diskType for tiered storage)
