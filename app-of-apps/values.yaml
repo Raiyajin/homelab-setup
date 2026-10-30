@@ -14,7 +14,7 @@ apps:
     repoURL: https://github.com/kubernetes-sigs/gateway-api.git
     path: config/crd/standard
     # renovate: datasource=github-tags depName=kubernetes-sigs/gateway-api
-    targetRevision: v1.6.3
+    targetRevision: v1.7.0
 
   metrics-server:
     namespace: kube-system
