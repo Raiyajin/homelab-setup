@@ -16,6 +16,12 @@ variable "cluster_name" {
   default     = "kubernetes"
 }
 
+variable "controlplane_ip" {
+  description = "Kubernetes API endpoint IP, reserved for k8s-cp-01 in OPNsense Kea (opnsense-config)"
+  type        = string
+  default     = "10.20.0.100"
+}
+
 variable "github_repository" {
   description = "Public github repository https address to use for argo cd"
   type        = string

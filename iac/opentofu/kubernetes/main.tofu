@@ -83,8 +83,9 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
     for_each = local.network_interfaces[each.value.role]
 
     content {
-      bridge  = network_device.value.bridge
-      vlan_id = lookup(network_device.value, "vlan_id", null)
+      bridge      = network_device.value.bridge
+      vlan_id     = lookup(network_device.value, "vlan_id", null)
+      mac_address = lookup(network_device.value, "mac_address", null)
 
       model    = "virtio"
       firewall = false

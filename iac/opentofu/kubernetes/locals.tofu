@@ -1,7 +1,8 @@
 locals {
   network_interfaces = {
     "controlplane" : [
-      { bridge = "vmbr1", dhcp = true, interface = "ens18", vlan_id = "10" }
+      # Fixed MAC so the OPNsense Kea reservation always leases var.controlplane_ip
+      { bridge = "vmbr1", dhcp = true, interface = "ens18", vlan_id = "10", mac_address = "BC:24:11:C2:98:54" }
     ],
     "worker" : [
       { bridge = "vmbr1", dhcp = true, interface = "ens18", vlan_id = "20" },
@@ -42,8 +43,7 @@ locals {
       index(v.network_interface_names, local.network_interfaces["controlplane"][0].interface)
     )[0]
   }
-  # bootstrapped_controlplane_ip = element(flatten(proxmox_virtual_environment_vm.kubernetes["k8s-cp-01"].ipv4_addresses), -1)
-  bootstrapped_controlplane_ip = local.proxmox_vm_node_ips["k8s-cp-01"]
+  bootstrapped_controlplane_ip = var.controlplane_ip
 
   kubeconfig = talos_cluster_kubeconfig.this.kubernetes_client_configuration
 }

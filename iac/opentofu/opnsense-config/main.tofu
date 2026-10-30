@@ -113,6 +113,15 @@ resource "opnsense_kea_subnet" "dhcp_subnets" {
   description = each.value.description
 }
 
+# Pins the Kubernetes API endpoint; MAC must match the VM in iac/opentofu/kubernetes/locals.tofu
+resource "opnsense_kea_reservation" "k8s_cp_01" {
+  subnet_id   = opnsense_kea_subnet.dhcp_subnets["k8s_cp"].id
+  ip_address  = "10.20.0.100"
+  mac_address = "BC:24:11:C2:98:54"
+  hostname    = "k8s-cp-01"
+  description = "Kubernetes Control Plane k8s-cp-01"
+}
+
 resource "opnsense_firewall_category" "category" {
   for_each = toset([
     "baseline",
