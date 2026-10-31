@@ -183,10 +183,11 @@ promstack:
                 storage: 20Gi
 
 loki:
-  extraEnvFrom:
+  loki:
+    extraEnvFrom:
     - secretRef:
         name: s3-access-credentials-admin
-  loki:
+
     commonConfig:
       replication_factor: 1
     schemaConfig:
@@ -226,10 +227,6 @@ loki:
     replicas: 1
   write:
     replicas: 1
-
-  # Disable minio storage
-  minio:
-    enabled: false
 
   monitoring:
     serviceMonitor:
