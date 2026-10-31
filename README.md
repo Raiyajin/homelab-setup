@@ -35,4 +35,4 @@
 * Automation: OpenTofu (via OPNsense & Proxmox Providers)
 
 ## Schema
-![homelab-setup](/documentation/images/homelab-setup.drawio.png)
+![homelab-setup](/docs/images/homelab-setup.drawio.png)
