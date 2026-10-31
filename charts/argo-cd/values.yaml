@@ -57,6 +57,10 @@ argo-cd:
       server.insecure: true
 
   server:
+    metrics: &metrics
+      enabled: true
+      serviceMonitor:
+        enabled: true
     resources:
       limits:
         memory: 128Mi
@@ -65,6 +69,7 @@ argo-cd:
         memory: 64Mi
 
   controller:
+    metrics: *metrics
     resources:
       limits:
         cpu: 1
@@ -74,6 +79,9 @@ argo-cd:
         memory: 256Mi
 
   redis:
+    exporter:
+      enabled: true
+    metrics: *metrics
     resources:
       limits:
         cpu: 200m
@@ -100,3 +108,9 @@ argo-cd:
       requests:
         cpu: 1000m
         memory: 1Gi
+  repoServer:
+    metrics: *metrics
+  applicationSet:
+    metrics: *metrics
+  notifications:
+    metrics: *metrics

@@ -13,3 +13,7 @@ longhorn:
   defaultSettings:
     # path for secondary disk on worker talos nodes
     defaultDataPath: /var/mnt/storage
+
+  metrics:
+    serviceMonitor:
+      enabled: true

@@ -4,6 +4,9 @@ global:
 opnsense-unbound:
   apiSecret: opnsense-api
 
+  serviceMonitor:
+    enabled: true
+
   fullnameOverride: external-dns-opnsense
   logLevel: debug
   provider:
@@ -67,6 +70,9 @@ opnsense-unbound:
 
 ovh:
   apiSecret: ovh-api
+
+  serviceMonitor:
+    enabled: true
 
   provider: "ovh"
 

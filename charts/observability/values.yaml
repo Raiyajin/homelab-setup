@@ -167,6 +167,12 @@ promstack:
 
   prometheus:
     prometheusSpec:
+      # select monitors and rules from every chart, not only those labelled release=observability
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      scrapeConfigSelectorNilUsesHelmValues: false
       retention: 7d
       storageSpec:
         volumeClaimTemplate:
@@ -225,7 +231,14 @@ loki:
   minio:
     enabled: false
 
+  monitoring:
+    serviceMonitor:
+      enabled: true
+
 tempo:
+  serviceMonitor:
+    enabled: true
+
   extraVolumes:
   - name: ca-trust-bundle
     configMap:
@@ -261,6 +274,9 @@ tempo:
             endpoint: "0.0.0.0:4318"
 
 alloy:
+  serviceMonitor:
+    enabled: true
+
   controller:
     type: daemonset
 

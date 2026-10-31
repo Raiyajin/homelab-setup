@@ -1,4 +1,9 @@
 # Available parameters and their default values for the SeaweedFS chart.
+global:
+  seaweedfs:
+    monitoring:
+      enabled: true
+
 seaweedfs:
   # image:
   #   registry: ""

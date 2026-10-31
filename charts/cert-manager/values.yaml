@@ -10,6 +10,10 @@ cert-manager:
   config:
     enableGatewayAPI: true
 
+  prometheus:
+    servicemonitor:
+      enabled: true
+
 cert-manager-webhook-ovh:
   groupName: "acme.raiyajin.homelab.internal"
 
@@ -20,3 +24,7 @@ trust-manager:
   app:
     trust:
       namespace: tools
+    metrics:
+      service:
+        servicemonitor:
+          enabled: true
