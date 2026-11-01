@@ -55,6 +55,9 @@ argo-cd:
   configs:
     params:
       server.insecure: true
+      # traces to alloy -> tempo (only server and repo-server read it)
+      otlp.address: observability-alloy.observability.svc:4317
+      otlp.insecure: true
 
   server:
     metrics: &metrics

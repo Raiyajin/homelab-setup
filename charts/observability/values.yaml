@@ -76,6 +76,12 @@ promstack:
 
   grafana:
     enabled: true
+    grafana.ini:
+      tracing.opentelemetry:
+        sampler_type: const
+        sampler_param: 1
+      tracing.opentelemetry.otlp:
+        address: observability-alloy.observability.svc:4317
     admin:
       existingSecret: "grafana-admin-credentials"
       userKey: "user"
@@ -216,6 +222,12 @@ promstack:
 
   prometheus:
     prometheusSpec:
+      tracingConfig:
+        clientType: grpc
+        endpoint: observability-alloy.observability.svc:4317
+        insecure: true
+        # default 0 sends nothing; rule evaluations make 1 too noisy
+        samplingFraction: "0.1"
       # select monitors and rules from every chart, not only those labelled release=observability
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
