@@ -41,7 +41,10 @@ On GitHub, go to "Settings" > "Developer settings" > "Personal access tokens" > 
     * Contents
     * Pull requests
     * Issues (for the Dependency Dashboard)
-    * Workflows (only needed if GitHub Actions workflows are added later)
+    * Commit statuses (automerge waits for a green commit status. Fine-grained tokens can't read check runs, so workflows gating automerge must also post a commit status, see `charts`' `lint.yml`)
+    * Workflows (Renovate bumps the GitHub Actions in `charts`' workflows)
+* **Permissions** (read-only):
+    * Dependabot alerts (lets Renovate open security fix PRs)
 
 > **Note:** fine-grained tokens expire (at most one year). Set a reminder to rotate it.
 
