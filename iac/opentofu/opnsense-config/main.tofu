@@ -424,6 +424,16 @@ resource "opnsense_firewall_filter" "worker_controlplane" {
     "cilium_vxlan" = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
     "cilium_hubble" = { protocol = "TCP", port = 4244 }
+    # prometheus scrapes (pod traffic is masqueraded to the worker node ip)
+    "kubelet"            = { protocol = "TCP", port = 10250 }
+    "node_exporter"      = { protocol = "TCP", port = 9100 }
+    "etcd_metrics"       = { protocol = "TCP", port = 2381 }
+    "controller_manager" = { protocol = "TCP", port = 10257 }
+    "scheduler"          = { protocol = "TCP", port = 10259 }
+    "cilium_agent"       = { protocol = "TCP", port = 9962 }
+    "cilium_operator"    = { protocol = "TCP", port = 9963 }
+    "cilium_envoy"       = { protocol = "TCP", port = 9964 }
+    "hubble_metrics"     = { protocol = "TCP", port = 9965 }
   }
   enabled     = true
   description = "Allow ${each.key} from k8s workers to k8s controlplane"
