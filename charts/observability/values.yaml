@@ -62,10 +62,13 @@ promstack:
   # cilium replaces kube-proxy
   kubeProxy:
     enabled: false
-  # talos runs etcd as a host service, not a pod, so the service needs explicit endpoints
+  # talos runs etcd outside k8s and argocd excludes Endpoints objects,
+  # so etcd is scraped by templates/etcd-scrapeconfig.yaml; keep rules and dashboards only
   kubeEtcd:
-    endpoints:
-      - 10.20.0.100 # k8s-cp-01, static dhcp lease in iac/opentofu/opnsense-config
+    service:
+      enabled: false
+    serviceMonitor:
+      enabled: false
   crds:
     enabled: true
     upgradeJob:

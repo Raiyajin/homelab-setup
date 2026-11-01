@@ -1,0 +1,10 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: kube-etcd
+  namespace: {{ .Release.Namespace }}
+spec:
+  jobName: kube-etcd
+  staticConfigs:
+    - targets:
+        - 10.20.0.100:2381 # k8s-cp-01, static dhcp lease in iac/opentofu/opnsense-config
