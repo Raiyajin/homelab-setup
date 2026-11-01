@@ -168,6 +168,39 @@ promstack:
           serviceMap:
             datasourceUid: prometheus
 
+    # dashboards for charts that don't ship their own, pulled from grafana.com at startup
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: grafana-com
+            folder: Homelab
+            type: file
+            options:
+              path: /var/lib/grafana/dashboards/grafana-com
+    dashboards:
+      grafana-com:
+        argo-cd:
+          gnetId: 14584
+          revision: 1
+          datasource: Prometheus
+        cert-manager:
+          gnetId: 20842
+          revision: 3
+          datasource: Prometheus
+        longhorn:
+          gnetId: 16888
+          revision: 14
+          datasource: Prometheus
+        cloudflared:
+          gnetId: 17457
+          revision: 6
+          datasource: Prometheus
+        external-dns:
+          gnetId: 15038
+          revision: 3
+          datasource: Prometheus
+
     extraConfigmapMounts:
     - name: ca-trust-bundle
       mountPath: /etc/ssl/certs/ca-certificates.crt
@@ -251,6 +284,8 @@ loki:
 
   monitoring:
     serviceMonitor:
+      enabled: true
+    dashboards:
       enabled: true
 
 tempo:

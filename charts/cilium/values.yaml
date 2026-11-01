@@ -8,12 +8,16 @@ cilium:
   k8sServiceHost: localhost
   k8sServicePort: 7445
   
+  dashboards:
+    enabled: true
   prometheus:
     enabled: true
     metricsService: true
     serviceMonitor:
       enabled: true
   operator:
+    dashboards:
+      enabled: true
     prometheus:
       metricsService: true
       serviceMonitor:
@@ -31,6 +35,8 @@ cilium:
         - flow
         - icmp
       serviceMonitor:
+        enabled: true
+      dashboards:
         enabled: true
     ui:
       enabled: true
