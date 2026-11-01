@@ -13,7 +13,10 @@ metadata:
   {{- end }}
 spec:
   parentRefs:
-    - name: {{ $route.gateway.name | default "internal" }}
+    # API-server defaults written out so Argo CD's server-side-apply diff stays in sync
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ $route.gateway.name | default "internal" }}
       namespace: {{ $route.gateway.namespace | default "kube-system" }}
   {{- if $route.host }}
   hostnames:
@@ -21,8 +24,11 @@ spec:
   {{- end }}
   rules:
     - backendRefs:
-        - name: {{ $route.service.name }}
+        - group: ""
+          kind: Service
+          name: {{ $route.service.name }}
           port: {{ $route.service.port }}
+          weight: 1
       {{- if or (empty $route.kind) (eq $route.kind "HTTPRoute") }}
       matches:
         - path:
