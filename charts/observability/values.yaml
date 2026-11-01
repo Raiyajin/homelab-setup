@@ -187,6 +187,16 @@ loki:
     extraEnvFrom:
     - secretRef:
         name: s3-access-credentials-admin
+    # trust the internal CA for s3.homelab.internal
+    extraVolumes:
+    - name: ca-trust-bundle
+      configMap:
+        name: ca-trust-bundle
+    extraVolumeMounts:
+    - name: ca-trust-bundle
+      mountPath: /etc/ssl/certs/ca-certificates.crt
+      subPath: trust-bundle.pem
+      readOnly: true
 
   loki:
     commonConfig:
