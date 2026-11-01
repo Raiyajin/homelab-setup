@@ -16,7 +16,7 @@ renovate:
       {
         "platform": "github",
         "autodiscover": false,
-        "repositories": ["Raiyajin/homelab-setup", "Raiyajin/homelab-argo-apps"],
+        "repositories": ["Raiyajin/homelab-setup", "Raiyajin/homelab-argo-apps", "Raiyajin/charts"],
         "onboarding": false,
         "requireConfig": "required",
         "gitAuthor": "Renovate <77416101+Raiyajin@users.noreply.github.com>"
