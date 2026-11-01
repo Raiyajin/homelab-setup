@@ -17,3 +17,13 @@ longhorn:
   metrics:
     serviceMonitor:
       enabled: true
+
+  networkPolicies:
+    # longhorn-manager netpol otherwise drops prometheus on 9500
+    metricsScrapeSources:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: observability
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/name: prometheus
