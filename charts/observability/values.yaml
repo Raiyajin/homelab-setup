@@ -183,11 +183,12 @@ promstack:
                 storage: 20Gi
 
 loki:
-  loki:
+  defaults:
     extraEnvFrom:
     - secretRef:
         name: s3-access-credentials-admin
 
+  loki:
     commonConfig:
       replication_factor: 1
     schemaConfig:
