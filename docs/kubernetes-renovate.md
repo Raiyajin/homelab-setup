@@ -17,7 +17,7 @@ Renovate can be used through Mend's hosted GitHub App, but I chose to self-host 
     * `helm-values`: `image.repository` / `image.tag` pairs in `values.yaml`
     * `terraform`: OpenTofu providers
     * a custom regex manager for any version annotated with a `# renovate:` comment (see [Tracking a custom version](#tracking-a-custom-version))
-* `charts/renovate` deploys the official [Renovate Helm chart](https://github.com/renovatebot/helm-charts) as a CronJob running every hour. Its **global config** (in `values.yaml`) restricts it to this repository and only acts when `renovate.json` exists.
+* `charts/renovate` deploys the official [Renovate Helm chart](https://github.com/renovatebot/helm-charts) as a CronJob running every hour. Its **global config** (in `values.yaml`) restricts it to the repositories listed in `repositories` (`homelab-setup` and `homelab-argo-apps`). A listed repository is only processed when it has a `renovate.json` at its root.
 * Patch and minor updates are grouped into one pull request per manager, and major updates get their own pull request.
 * A "Dependency Dashboard" issue lists every pending update and lets you trigger one manually by ticking a checkbox.
 
@@ -32,7 +32,7 @@ Renovate can be used through Mend's hosted GitHub App, but I chose to self-host 
 
 On GitHub, go to "Settings" > "Developer settings" > "Personal access tokens" > "Fine-grained tokens" and generate a new token:
 
-* **Repository access**: only `homelab-setup`
+* **Repository access**: only `homelab-setup` and `homelab-argo-apps` (every repository listed in the global config)
 * **Permissions** (read and write):
     * Contents
     * Pull requests
