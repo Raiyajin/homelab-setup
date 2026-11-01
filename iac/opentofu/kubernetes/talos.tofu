@@ -145,6 +145,10 @@ data "talos_machine_configuration" "configuration" {
           cni = { name = "none" }
         }
         proxy = { disabled = true }
+        # expose control plane metrics to prometheus (localhost-only by default on talos)
+        controllerManager = { extraArgs = { "bind-address" = "0.0.0.0" } }
+        scheduler         = { extraArgs = { "bind-address" = "0.0.0.0" } }
+        etcd              = { extraArgs = { "listen-metrics-urls" = "http://0.0.0.0:2381" } }
         inlineManifests = [
           {
             name     = "cilium"
