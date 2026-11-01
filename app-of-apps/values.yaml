@@ -38,6 +38,9 @@ apps:
     namespace: external-secrets
     project: infrastructure
     syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
       syncOptions:
         - CreateNamespace=true
         - RespectIgnoreDifferences=true
@@ -71,6 +74,9 @@ apps:
     namespace: observability
     project: infrastructure
     syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
       syncOptions:
         - RespectIgnoreDifferences=true
         - ServerSideApply=true
