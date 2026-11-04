@@ -16,7 +16,7 @@ dependencies:
 
   - name: loki
     repository: oci://ghcr.io/grafana-community/helm-charts
-    version: 20.3.0
+    version: 20.4.1
     
   - name: tempo
     repository: oci://ghcr.io/grafana-community/helm-charts
