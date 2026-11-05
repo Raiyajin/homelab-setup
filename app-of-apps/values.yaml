@@ -70,6 +70,25 @@ apps:
     namespace: renovate
     project: infrastructure
 
+  github-runners:
+    namespace: github-runners
+    project: infrastructure
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          # dind runners need privileged pods
+          pod-security.kubernetes.io/enforce: privileged
+      syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
+        # ARC CRDs exceed the client-side apply annotation size limit
+        - ServerSideApply=true
+        # AutoscalingRunnerSets ship in the same app as their CRDs
+        - SkipDryRunOnMissingResource=true
+
   observability:
     namespace: observability
     project: infrastructure

@@ -1,0 +1,32 @@
+# Runners execute untrusted workflow code: internet only, no LAN, no cluster, no nodes.
+# Covers dind job containers too, they are NATed behind the runner pod.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: sandboxed-runners
+  namespace: {{ .Values.global.namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      homelab/sandboxed-runner: "true"
+  # Empty rule: default-deny all ingress
+  ingress:
+    - {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # CIDR rules never match cluster pods or nodes, so this is "public internet only"
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 100.64.0.0/10
+            - 169.254.0.0/16

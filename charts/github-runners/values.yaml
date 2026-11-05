@@ -1,0 +1,41 @@
+global:
+  namespace: "github-runners"
+
+# GitHub App credentials, one per installation (Raiyajin account, mythic-wizards org).
+# Each OpenBao key must hold: app_id, installation_id, private_key. See templates/external-secrets-github-app.yaml
+githubApps:
+  github-app-raiyajin: kubernetes/talos-cluster/github-runners/github-app-raiyajin
+  github-app-mythic-wizards: kubernetes/talos-cluster/github-runners/github-app-mythic-wizards
+
+controller: {}
+
+# Scale set chart can't discover the controller under `helm template` (Argo CD), so point at it explicitly
+scaleSetDefaults: &scaleSet
+  controllerServiceAccount:
+    namespace: github-runners
+    name: github-runners-gha-rs-controller
+  minRunners: 0
+  maxRunners: 3
+  containerMode:
+    type: dind
+  template:
+    metadata:
+      labels:
+        # Selected by templates/network-policy.yaml
+        homelab/sandboxed-runner: "true"
+    spec:
+      # Each job runs in its own micro-VM, so the privileged dind sidecar can't reach the node
+      runtimeClassName: kata
+
+# Workflows target a set with `runs-on: <runnerScaleSetName>`
+homelab-charts:
+  <<: *scaleSet
+  githubConfigUrl: https://github.com/Raiyajin/charts
+  githubConfigSecret: github-app-raiyajin
+  runnerScaleSetName: homelab-charts
+
+mythic-wizards:
+  <<: *scaleSet
+  githubConfigUrl: https://github.com/mythic-wizards
+  githubConfigSecret: github-app-mythic-wizards
+  runnerScaleSetName: mythic-wizards
