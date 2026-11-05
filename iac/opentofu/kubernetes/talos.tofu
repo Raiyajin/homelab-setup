@@ -92,6 +92,7 @@ data "talos_image_factory_extensions_versions" "this" {
     names = concat([
       "siderolabs/qemu-guest-agent",
       "siderolabs/iscsi-tools",
+      "siderolabs/kata-containers",
     ], each.value)
   }
 }

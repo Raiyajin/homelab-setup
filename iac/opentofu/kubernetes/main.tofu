@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_storage_lvmthin" "kubernetes" {
+resource "proxmox_storage_lvmthin" "kubernetes" {
   id    = "kubernetes"
   nodes = ["nas"]
 
@@ -8,7 +8,7 @@ resource "proxmox_virtual_environment_storage_lvmthin" "kubernetes" {
   content = ["images"]
 }
 
-resource "proxmox_virtual_environment_download_file" "talos_boot_image" {
+resource "proxmox_download_file" "talos_boot_image" {
   node_name = "nas"
 
   content_type = "iso"
@@ -64,7 +64,8 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
   cpu {
     cores   = each.value.cpu.cores
     sockets = each.value.cpu.sockets
-    type    = "x86-64-v4"
+    # Workers need VT-x/AMD-V passed through for Kata Containers (sandboxed GitHub runners)
+    type = each.value.role == "worker" ? "host" : "x86-64-v4"
 
     flags = [
       # 1GB Hugepages
@@ -99,16 +100,16 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
       # Talos OS Drive (followed recommandation from: https://docs.siderolabs.com/talos/v1.9/getting-started/system-requirements) 
       scsi0 = {
         datastore_id = "local-lvm"
-        size = 100
-        ssd = true
+        size         = 100
+        ssd          = true
       }
-    },
-    each.value.role == "worker" ? {
-      scsi1 =  {
-        datastore_id = proxmox_virtual_environment_storage_lvmthin.kubernetes.id
-        size = 5000
-        ssd = false
-      }
+      },
+      each.value.role == "worker" ? {
+        scsi1 = {
+          datastore_id = proxmox_storage_lvmthin.kubernetes.id
+          size         = 5000
+          ssd          = false
+        }
     } : {})
     content {
       datastore_id = disk.value.datastore_id
@@ -116,13 +117,13 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
       interface    = disk.key
       file_format  = "raw"
       ssd          = disk.value.ssd
-      iothread     = true      
+      iothread     = true
     }
   }
 
   # Attachment for the Installer ISO
   cdrom {
-    file_id   = proxmox_virtual_environment_download_file.talos_boot_image.id
+    file_id   = proxmox_download_file.talos_boot_image.id
     interface = "ide3"
   }
 
@@ -132,4 +133,15 @@ resource "proxmox_virtual_environment_vm" "kubernetes" {
   }
 
   tags = concat(local.tags, [each.value.role])
+}
+# Provider renames (bpg/proxmox 0.119), safe to delete once applied
+
+moved {
+  from = proxmox_virtual_environment_storage_lvmthin.kubernetes
+  to   = proxmox_storage_lvmthin.kubernetes
+}
+
+moved {
+  from = proxmox_virtual_environment_download_file.talos_boot_image
+  to   = proxmox_download_file.talos_boot_image
 }
