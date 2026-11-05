@@ -1,10 +1,10 @@
 locals {
   linux_bridges = {
     # This bridge exist already as it was initialized for setting up proxmox
-    vmbr0  = { ports = ["enp4s0"], mac_address = "BC:24:11:AA:BB:01", managed = false }
-    vmbr1  = { ports = ["enp5s0"], mac_address = "BC:24:11:AA:BB:02", managed = true, vlan_aware = true }
-    vmbr2  = { ports = ["enp6s0"], mac_address = "BC:24:11:AA:BB:03", managed = true, vlan_aware = true }
-    vmbr3  = { ports = ["enp7s0"], mac_address = "BC:24:11:AA:BB:04", managed = true }
+    vmbr0 = { ports = ["enp4s0"], mac_address = "BC:24:11:AA:BB:01", managed = false }
+    vmbr1 = { ports = ["enp5s0"], mac_address = "BC:24:11:AA:BB:02", managed = true, vlan_aware = true }
+    vmbr2 = { ports = ["enp6s0"], mac_address = "BC:24:11:AA:BB:03", managed = true, vlan_aware = true }
+    vmbr3 = { ports = ["enp7s0"], mac_address = "BC:24:11:AA:BB:04", managed = true }
     vmbr4 = { ports = [], mac_address = "BC:24:11:AA:BB:05", managed = true }
   }
   linux_vlans = {
@@ -19,7 +19,7 @@ locals {
   }
 }
 
-resource "proxmox_virtual_environment_network_linux_bridge" "linux_bridge" {
+resource "proxmox_network_linux_bridge" "linux_bridge" {
   for_each  = { for k, v in local.linux_bridges : k => v if v.managed }
   node_name = var.proxmox_node
   name      = each.key
@@ -28,7 +28,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "linux_bridge" {
   vlan_aware = lookup(each.value, "vlan_aware", false)
 }
 
-resource "proxmox_virtual_environment_network_linux_vlan" "linux_vlan" {
+resource "proxmox_network_linux_vlan" "linux_vlan" {
   for_each  = local.linux_vlans
   node_name = var.proxmox_node
   name      = each.key
