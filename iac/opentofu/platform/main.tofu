@@ -65,7 +65,7 @@ resource "proxmox_virtual_environment_container" "container" {
 
   operating_system {
     template_file_id = proxmox_download_file.debian.id
-    type = "debian"
+    type             = "debian"
   }
 
   startup {
@@ -91,7 +91,7 @@ resource "tls_private_key" "platform" {
   algorithm = "ED25519"
 }
 
-resource "opnsense_kea_reservation" "static_ip" {
+resource "opnsense_kea_dhcpv4_reservation" "static_ip" {
   for_each = local.services
 
   subnet_id = data.terraform_remote_state.opnsense.outputs.subnets["platform"].id
@@ -105,12 +105,12 @@ resource "opnsense_kea_reservation" "static_ip" {
 resource "opnsense_unbound_host_override" "override" {
   for_each = local.services
 
-  enabled = true
+  enabled     = true
   description = "Domain override for ${each.key}"
 
   hostname = each.key
-  domain = "internal"
+  domain   = "internal"
 
-  type = "A"
-  server = opnsense_kea_reservation.static_ip[each.key].ip_address
+  type   = "A"
+  server = opnsense_kea_dhcpv4_reservation.static_ip[each.key].ip_address
 }

@@ -69,8 +69,8 @@ locals {
         "10.50.0.100 - 10.50.0.200"
       ]
       enable_gateway = false
-      description = "Insecure"
-      interface   = "opt4"
+      description    = "Insecure"
+      interface      = "opt4"
     }
     "platform" : {
       subnet_cidr = "10.20.5.0/24"
@@ -83,7 +83,7 @@ locals {
   }
 }
 
-resource "opnsense_kea_subnet" "dhcp_subnets" {
+resource "opnsense_kea_dhcpv4_subnet" "dhcp_subnets" {
   for_each = { for k, v in local.dhcp_subnets : k => v if lookup(v, "pools", null) != null }
 
   auto_collect = false
@@ -114,8 +114,8 @@ resource "opnsense_kea_subnet" "dhcp_subnets" {
 }
 
 # Pins the Kubernetes API endpoint; MAC must match the VM in iac/opentofu/kubernetes/locals.tofu
-resource "opnsense_kea_reservation" "k8s_cp_01" {
-  subnet_id   = opnsense_kea_subnet.dhcp_subnets["k8s_cp"].id
+resource "opnsense_kea_dhcpv4_reservation" "k8s_cp_01" {
+  subnet_id   = opnsense_kea_dhcpv4_subnet.dhcp_subnets["k8s_cp"].id
   ip_address  = "10.20.0.100"
   mac_address = "BC:24:11:C2:98:54"
   hostname    = "k8s-cp-01"
@@ -198,17 +198,17 @@ resource "opnsense_firewall_filter" "dns" {
 
 resource "opnsense_firewall_filter" "public" {
   for_each = {
-    "http" = { protocol = "TCP", port = 80 }
-    "https" = { protocol = "TCP", port = 443 }
+    "http"            = { protocol = "TCP", port = 80 }
+    "https"           = { protocol = "TCP", port = 443 }
     "https_alternate" = { protocol = "TCP", port = 8443 }
-    "ping" = { protocol = "ICMP", port = null }
+    "ping"            = { protocol = "ICMP", port = null }
   }
   enabled     = true
   description = "Allow ${upper(each.key)} traffic"
 
   # All interface but INSECURE
   interface = {
-    invert = true
+    invert    = true
     interface = [local.dhcp_subnets["insecure"].interface]
   }
 
@@ -237,7 +237,7 @@ resource "opnsense_firewall_filter" "public" {
 
 resource "opnsense_firewall_filter" "platform_controlplane" {
   for_each = {
-    "k8s_api"  = { protocol = "TCP", port = 6443 }
+    "k8s_api" = { protocol = "TCP", port = 6443 }
   }
   enabled     = true
   description = "Allow ${each.key} from platform to k8s controlplane"
@@ -273,9 +273,9 @@ resource "opnsense_firewall_filter" "platform_controlplane" {
 
 resource "opnsense_firewall_filter" "wireguard_controlplane" {
   for_each = {
-    "talos_apid"   = { protocol = "TCP", port = 50000 }
+    "talos_apid" = { protocol = "TCP", port = 50000 }
     # "talos_trustd" = { protocol = "TCP", port = 50001 }
-    "k8s_api"  = { protocol = "TCP", port = 6443 }
+    "k8s_api" = { protocol = "TCP", port = 6443 }
   }
   enabled     = true
   description = "Allow ${each.key} from wireguard to k8s controlplane"
@@ -311,7 +311,7 @@ resource "opnsense_firewall_filter" "wireguard_controlplane" {
 
 resource "opnsense_firewall_filter" "wireguard_worker" {
   for_each = {
-    "talos_apid"   = { protocol = "TCP", port = 50000 }
+    "talos_apid" = { protocol = "TCP", port = 50000 }
   }
   enabled     = true
   description = "Allow ${each.key} from wireguard to k8s workers"
@@ -347,7 +347,7 @@ resource "opnsense_firewall_filter" "wireguard_worker" {
 
 resource "opnsense_firewall_filter" "wireguard_platform" {
   for_each = {
-    "ssh"   = { protocol = "TCP", port = 22 }
+    "ssh" = { protocol = "TCP", port = 22 }
   }
   enabled     = true
   description = "Allow ${each.key} from wireguard to platform"
@@ -379,9 +379,9 @@ resource "opnsense_firewall_filter" "wireguard_platform" {
 
 resource "opnsense_firewall_filter" "controlplane_worker" {
   for_each = {
-    "talos_apid"   = { protocol = "TCP", port = 50000 }
-    "kubelet_api" = { protocol = "TCP", port = 10250 }
-    "cilium_vxlan" = { protocol = "UDP", port = 8472 }
+    "talos_apid"    = { protocol = "TCP", port = 50000 }
+    "kubelet_api"   = { protocol = "TCP", port = 10250 }
+    "cilium_vxlan"  = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
     "cilium_hubble" = { protocol = "TCP", port = 4244 }
   }
@@ -419,9 +419,9 @@ resource "opnsense_firewall_filter" "controlplane_worker" {
 
 resource "opnsense_firewall_filter" "worker_controlplane" {
   for_each = {
-    "talos_trustd" = { protocol = "TCP", port = 50001 }
-    "k8s_api"  = { protocol = "TCP", port = 6443 }
-    "cilium_vxlan" = { protocol = "UDP", port = 8472 }
+    "talos_trustd"  = { protocol = "TCP", port = 50001 }
+    "k8s_api"       = { protocol = "TCP", port = 6443 }
+    "cilium_vxlan"  = { protocol = "UDP", port = 8472 }
     "cilium_health" = { protocol = "TCP", port = 4240 }
     "cilium_hubble" = { protocol = "TCP", port = 4244 }
     # prometheus scrapes (pod traffic is masqueraded to the worker node ip)
