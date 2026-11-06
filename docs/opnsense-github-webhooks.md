@@ -52,7 +52,12 @@ In the repository `Settings > Webhooks > Add webhook`:
 
 - Payload URL: `https://webhooks.<domain>:44300/api/webhook`
 - Content type: `application/json`
-- Secret: same value as `webhook.github.secret` in the `argocd-secret` Secret
+- Secret: the value stored in OpenBao, created with:
+  ```bash
+  bao kv put -mount=kubernetes/talos-cluster argo-cd/github/webhook secret="$(openssl rand -hex 32)"
+  bao kv get -mount=kubernetes/talos-cluster -field=secret argo-cd/github/webhook
+  ```
+  It is synced by the `argocd-github-webhook` ExternalSecret and referenced from `argocd-secret` as `$argocd-github-webhook:secret`.
 
 The secret is required: GitHub hook IPs are shared by every GitHub user, so the IP filter alone does not authenticate the sender.
 
