@@ -6,6 +6,15 @@ apps:
   cilium:
     namespace: kube-system
     project: infrastructure
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
+        # cilium-dashboard ConfigMap exceeds the client-side apply annotation size limit
+        - ServerSideApply=true
 
   gateway-api:
     namespace: kube-system
