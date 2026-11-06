@@ -261,3 +261,25 @@ gateway:
           selector:
             matchLabels:
               kubernetes.io/metadata.name: observability
+
+  webhooks:
+    certIssuer: "letsencrypt-prod"
+    addresses:
+    - type: IPAddress
+      value: "10.50.0.210"
+
+    listeners:
+    - name: webhooks-https
+      protocol: HTTPS
+      port: 443
+      hostname: "webhooks.lmo-software.fr"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: webhooks-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: argocd
