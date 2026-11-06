@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: charts-lint
+  namespace: argo
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: main
+  # Always reports the final status, otherwise a crashed run leaves the PR pending forever
+  onExit: report
+  arguments:
+    parameters:
+    - name: sha
+  templates:
+  - name: main
+    steps:
+    - - name: pending
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/charts}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          # Same name as the old GitHub Actions check, so Renovate/branch protection keep working
+          - {name: context, value: Lint Charts}
+          - {name: state, value: pending}
+    - - name: lint
+        template: lint
+
+  - name: report
+    steps:
+    - - name: status
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/charts}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          - {name: context, value: Lint Charts}
+          - {name: state, value: "{{workflow.status}}"}
+
+  - name: lint
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/charts.git
+          revision: "{{workflow.parameters.sha}}"
+    container:
+      image: alpine/helm:4.3.1
+      workingDir: /src
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-pat
+            key: token
+      command: [sh, -euc]
+      args:
+      - |
+        echo "$GITHUB_TOKEN" | helm registry login ghcr.io --username Raiyajin --password-stdin
+        for chart in charts/*/; do
+          helm dependency build "$chart"
+          helm lint "$chart"
+        done

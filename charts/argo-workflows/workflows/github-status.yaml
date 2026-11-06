@@ -1,0 +1,36 @@
+# Reusable step: posts a commit status, which Renovate automerge and branch protection read
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: github-status
+  namespace: argo
+spec:
+  templates:
+  - name: set
+    inputs:
+      parameters:
+      - name: repo      # owner/name
+      - name: sha
+      - name: context   # check name shown on the PR
+      - name: state     # pending, or {{workflow.status}} from an exit handler
+    container:
+      image: curlimages/curl:8.23.0
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-pat
+            key: token
+      command: [sh, -euc]
+      args:
+      - |
+        case "{{inputs.parameters.state}}" in
+          pending) state=pending ;;
+          Succeeded) state=success ;;
+          *) state=failure ;;
+        esac
+        curl -fsS -o /dev/null -X POST \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/{{inputs.parameters.repo}}/statuses/{{inputs.parameters.sha}}" \
+          -d "{\"state\":\"$state\",\"context\":\"{{inputs.parameters.context}}\",\"target_url\":\"https://argo-workflows.homelab.internal/workflows/{{workflow.namespace}}/{{workflow.name}}\"}"

@@ -1,0 +1,42 @@
+# Submitted from GitHub webhooks (POST /api/v1/events/argo/github, HMAC checked by Argo Server)
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowEventBinding
+metadata:
+  name: charts-lint
+  namespace: argo
+spec:
+  event:
+    # Same-repo PRs only (Renovate included): fork code must never run with the GitHub token
+    selector: >-
+      metadata["x-github-event"] == ["pull_request"]
+      && payload.repository.full_name == "Raiyajin/charts"
+      && payload.action in ["opened", "synchronize", "reopened"]
+      && payload.pull_request.head.repo.full_name == "Raiyajin/charts"
+  submit:
+    workflowTemplateRef:
+      name: charts-lint
+    arguments:
+      parameters:
+      - name: sha
+        valueFrom:
+          event: payload.pull_request.head.sha
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowEventBinding
+metadata:
+  name: charts-release
+  namespace: argo
+spec:
+  event:
+    selector: >-
+      metadata["x-github-event"] == ["push"]
+      && payload.repository.full_name == "Raiyajin/charts"
+      && payload.ref == "refs/heads/main"
+  submit:
+    workflowTemplateRef:
+      name: charts-release
+    arguments:
+      parameters:
+      - name: sha
+        valueFrom:
+          event: payload.after

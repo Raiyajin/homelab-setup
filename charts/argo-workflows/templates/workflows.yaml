@@ -1,0 +1,5 @@
+# Raw Argo manifests: loaded as-is so Argo template expressions are not parsed by Helm
+{{- range $path, $_ := .Files.Glob "workflows/*.yaml" }}
+---
+{{ $.Files.Get $path }}
+{{- end }}

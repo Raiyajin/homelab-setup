@@ -1,0 +1,66 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: charts-release
+  namespace: argo
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: release
+  # Two quick merges must not race on the same chart version
+  synchronization:
+    mutexes:
+    - name: charts-release
+  onExit: report
+  arguments:
+    parameters:
+    - name: sha
+  templates:
+  - name: report
+    steps:
+    - - name: status
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/charts}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          - {name: context, value: Release Charts}
+          - {name: state, value: "{{workflow.status}}"}
+
+  - name: release
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/charts.git
+          revision: "{{workflow.parameters.sha}}"
+    container:
+      image: alpine/helm:4.3.1
+      workingDir: /src
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: github-pat
+            key: token
+      command: [sh, -euc]
+      args:
+      - |
+        REGISTRY=oci://ghcr.io/raiyajin/charts
+        echo "$GITHUB_TOKEN" | helm registry login ghcr.io --username Raiyajin --password-stdin
+        # common first: the other charts depend on it
+        for chart in charts/common $(ls -d charts/*/ | grep -v '^charts/common/$'); do
+          chart=${chart%/}
+          name=$(awk '/^name:/ {print $2}' "$chart/Chart.yaml")
+          version=$(awk '/^version:/ {print $2}' "$chart/Chart.yaml")
+
+          # published versions are immutable: only push versions that don't exist yet
+          if helm show chart "$REGISTRY/$name" --version "$version" >/dev/null 2>&1; then
+            echo "$name $version already published, skipping"
+            continue
+          fi
+
+          helm dependency build "$chart"
+          helm package "$chart" --destination /tmp/deploy
+          helm push "/tmp/deploy/$name-$version.tgz" "$REGISTRY"
+        done

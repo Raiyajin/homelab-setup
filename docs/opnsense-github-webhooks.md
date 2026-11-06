@@ -67,3 +67,23 @@ Verify with `Recent Deliveries > Redeliver`, the response must be `200`.
 
 1. Add a listener to `gateway.webhooks` in `charts/cilium/values.yaml` (or allow the namespace on the existing one)
 2. Add an HTTPRoute with `parentRefs: [{name: webhooks, namespace: kube-system}]`, matching only the webhook path
+
+## Argo Workflows CI
+
+Argo Server receives GitHub webhooks on `/api/v1/events/argo/github` (`charts/argo-workflows/templates/route.yaml`). It checks the HMAC secret, then submits the WorkflowTemplate matched by a `WorkflowEventBinding` (`charts/argo-workflows/workflows/`).
+
+1. Create the secrets in OpenBao:
+   ```bash
+   bao kv put -mount=kubernetes/talos-cluster argo-workflows/github/webhook secret="$(openssl rand -hex 32)"
+   # classic PAT, scopes: repo:status, write:packages
+   bao kv put -mount=kubernetes/talos-cluster argo-workflows/github/pat token=<ghp_...>
+   ```
+2. In the repository, add a second webhook (Argo CD keeps its own):
+   - Payload URL: `https://webhooks.<domain>:44300/api/v1/events/argo/github`
+   - Content type: `application/json`
+   - Secret: `bao kv get -mount=kubernetes/talos-cluster -field=secret argo-workflows/github/webhook`
+   - Events: `Pushes` and `Pull requests`
+
+Every delivery gets a `200`, even when no binding matches. To check that a binding fired, look at the submitted workflows: `kubectl -n argo get wf`.
+
+UI: `https://argo-workflows.homelab.internal`. Log in with `Bearer $(kubectl -n argo create token argo-workflows-server)`.

@@ -1,0 +1,46 @@
+# Identity used by Argo Server for requests signed with the `github.com` webhook secret:
+# it can only submit workflows through WorkflowEventBindings
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: github.com
+  namespace: argo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github.com.service-account-token
+  namespace: argo
+  annotations:
+    kubernetes.io/service-account.name: github.com
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submit-workflow-template
+  namespace: argo
+rules:
+- apiGroups: [argoproj.io]
+  resources: [workfloweventbindings]
+  verbs: [list]
+- apiGroups: [argoproj.io]
+  resources: [workflowtemplates]
+  verbs: [get]
+- apiGroups: [argoproj.io]
+  resources: [workflows]
+  verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: github.com
+  namespace: argo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submit-workflow-template
+subjects:
+- kind: ServiceAccount
+  name: github.com
+  namespace: argo

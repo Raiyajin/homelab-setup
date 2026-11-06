@@ -1,0 +1,22 @@
+# Default values: https://github.com/argoproj/argo-helm/blob/main/charts/argo-workflows/values.yaml
+argo-workflows:
+  controller:
+    workflowNamespaces:
+      - argo
+    workflowDefaults:
+      spec:
+        # Keeps finished workflows (and their pod logs) for a day
+        ttlStrategy:
+          secondsAfterCompletion: 86400
+
+  # Creates the `argo-workflow` SA that workflow pods run as
+  workflow:
+    serviceAccount:
+      create: true
+
+  server:
+    # `client`: the UI asks for a bearer token, and GitHub webhooks are mapped to the
+    # `github.com` SA (templates/webhook.yaml). Not `server`: anyone on the LAN could
+    # submit a workflow that reads the GitHub token.
+    authModes:
+      - client
