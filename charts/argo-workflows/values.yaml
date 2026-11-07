@@ -9,6 +9,27 @@ argo-workflows:
         ttlStrategy:
           secondsAfterCompletion: 86400
 
+    # Prometheus metrics on :9090, scraped through the ServiceMonitor
+    metricsConfig:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+    # Traces only (metrics stay on Prometheus), sent over TLS to the Tempo OTLP gRPC route
+    extraEnv:
+      - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+        value: https://tempo-otlp.homelab.internal:4317
+      - name: OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE
+        value: /etc/ssl/homelab/trust-bundle.pem
+    volumes:
+      - name: ca-trust-bundle
+        configMap:
+          name: ca-trust-bundle
+    volumeMounts:
+      - name: ca-trust-bundle
+        mountPath: /etc/ssl/homelab
+        readOnly: true
+
   # Creates the `argo-workflow` SA that workflow pods run as
   workflow:
     serviceAccount:

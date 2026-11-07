@@ -86,6 +86,10 @@ apps:
       automated:
         prune: true
         selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          # trust-manager copies the homelab CA bundle (ca-trust-bundle) for the OTLP TLS endpoint
+          cert-manager.io/trust: enabled
       syncOptions:
         - CreateNamespace=true
         - RespectIgnoreDifferences=true
