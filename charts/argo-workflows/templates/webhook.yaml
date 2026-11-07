@@ -44,3 +44,29 @@ subjects:
 - kind: ServiceAccount
   name: github.com
   namespace: argo
+---
+# Argo Server reads the `github.com` SA to find its token; the chart only grants this with SSO RBAC
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-server-webhook
+  namespace: argo
+rules:
+- apiGroups: [""]
+  resources: [serviceaccounts]
+  resourceNames: [github.com]
+  verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-server-webhook
+  namespace: argo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argo-server-webhook
+subjects:
+- kind: ServiceAccount
+  name: argo-workflows-server
+  namespace: argo
