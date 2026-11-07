@@ -95,8 +95,6 @@ apps:
         - RespectIgnoreDifferences=true
         # Argo Workflows CRDs exceed the client-side apply annotation size limit
         - ServerSideApply=true
-        # CRDs are installed by a hook Job, after the WorkflowTemplates are dry-run
-        - SkipDryRunOnMissingResource=true
 
   authentik:
     namespace: authentik

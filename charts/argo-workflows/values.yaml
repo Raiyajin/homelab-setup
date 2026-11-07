@@ -1,5 +1,9 @@
 # Default values: https://github.com/argoproj/argo-helm/blob/main/charts/argo-workflows/values.yaml
 argo-workflows:
+  # Full CRDs (~1.2MB each, installed by a hook Job on every sync) OOM the Argo CD controller
+  crds:
+    full: false
+
   controller:
     workflowNamespaces:
       - argo
