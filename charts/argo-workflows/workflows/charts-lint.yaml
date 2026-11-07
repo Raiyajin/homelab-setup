@@ -45,6 +45,8 @@ spec:
         git:
           repo: https://github.com/Raiyajin/charts.git
           revision: "{{workflow.parameters.sha}}"
+          usernameSecret: {name: github-pat, key: username}
+          passwordSecret: {name: github-pat, key: token}
     container:
       image: alpine/helm:4.3.1
       workingDir: /src
