@@ -1,0 +1,60 @@
+# Default values: https://github.com/goauthentik/helm/blob/main/charts/authentik/values.yaml
+authentik:
+  global:
+    # Secret key and DB password, synced from OpenBao (templates/external-secrets.yaml)
+    envFrom:
+      - secretRef:
+          name: authentik-secrets
+
+  authentik:
+    error_reporting:
+      enabled: false
+    postgresql:
+      host: "{{ .Release.Name }}-postgres"
+      name: authentik
+      user: authentik
+
+  server:
+    route:
+      main:
+        enabled: true
+        hostnames:
+          - auth.homelab.internal
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+      limits:
+        memory: 1Gi
+
+  worker:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 384Mi
+      limits:
+        memory: 1Gi
+
+postgres:
+  externalSecret:
+    enabled: true
+    data:
+      - secretKey: POSTGRES_PASSWORD
+        remoteKey: kubernetes/talos-cluster/authentik/config
+        property: postgres_password
+  env:
+    - name: POSTGRES_USER
+      value: authentik
+    - name: POSTGRES_DB
+      value: authentik

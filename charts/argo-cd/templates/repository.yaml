@@ -18,7 +18,9 @@ spec:
       data:
         url: {{ .url | quote }}
         type: {{ .type | quote }}
-        project: {{ .project | quote }}
+        {{- with .project }}
+        project: {{ . | quote }}
+        {{- end }}
         {{- if eq .type "helm" }}
         name: {{ .name }}
         enableOCI: {{ .enableOCI | quote }}

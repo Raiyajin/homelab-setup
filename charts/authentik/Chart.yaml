@@ -1,0 +1,12 @@
+apiVersion: v2
+name: authentik
+description: Authentik identity provider (SSO) with its own Postgres
+type: application
+version: 0.1.0
+dependencies:
+  - name: authentik
+    repository: https://charts.goauthentik.io
+    version: 2026.8.5
+  - name: postgres
+    repository: oci://ghcr.io/raiyajin/charts
+    version: 0.1.0

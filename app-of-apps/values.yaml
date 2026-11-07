@@ -98,6 +98,10 @@ apps:
         # CRDs are installed by a hook Job, after the WorkflowTemplates are dry-run
         - SkipDryRunOnMissingResource=true
 
+  authentik:
+    namespace: authentik
+    project: infrastructure
+
   observability:
     namespace: observability
     project: infrastructure

@@ -157,6 +157,21 @@ gateway:
             matchLabels:
               kubernetes.io/metadata.name: argo
 
+    - name: authentik-https
+      protocol: HTTPS
+      port: 443
+      hostname: "auth.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: authentik-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik
+
     - name: seaweedfs-s3-https
       protocol: HTTPS
       port: 443
