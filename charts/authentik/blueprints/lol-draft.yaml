@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+# lol-draft has no login: the embedded outpost (in authentik-server) proxies it after an Authentik login.
+# Its HTTPRoute (Raiyajin/homelab-argo-apps apps/lol-draft/templates/route.yaml) sends traffic to authentik-server.
+# The outpost's provider list lives in longhorn.yaml.
+version: 1
+metadata:
+  name: homelab lol-draft
+entries:
+  - model: authentik_providers_proxy.proxyprovider
+    id: lol-draft-provider
+    identifiers:
+      name: lol-draft
+    attrs:
+      authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      mode: proxy
+      external_host: https://lol-draft.homelab.internal
+      internal_host: http://lol-draft.lol-draft.svc:8080
+
+  - model: authentik_core.application
+    id: lol-draft-app
+    identifiers:
+      slug: lol-draft
+    attrs:
+      name: lol-draft
+      provider: !KeyOf lol-draft-provider
+      meta_launch_url: https://lol-draft.homelab.internal
+
+  # Phase 1: homelab-admins only (Discord users come with the public exposure)
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !KeyOf lol-draft-app
+      group: !Find [authentik_core.group, [name, homelab-admins]]
+    attrs:
+      order: 0

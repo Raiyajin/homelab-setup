@@ -33,6 +33,13 @@ entries:
     attrs:
       order: 0
 
+  # Other proxy providers must exist before the outpost list below references them
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: homelab lol-draft
+      required: true
+
   # Replaces the outpost's provider list: keep every proxy provider here
   - model: authentik_outposts.outpost
     identifiers:
@@ -40,3 +47,5 @@ entries:
     attrs:
       providers:
         - !KeyOf longhorn-provider
+        # blueprints/lol-draft.yaml
+        - !Find [authentik_providers_proxy.proxyprovider, [name, lol-draft]]
