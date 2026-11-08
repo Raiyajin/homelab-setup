@@ -195,6 +195,7 @@ kubectl -n authentik rollout restart deploy/authentik-worker deploy/authentik-se
 | `invalid_request: The request is otherwise malformed` | The provider has no `grant_types` (Authentik server logs show `Invalid grant_type for provider`) |
 | `x509: certificate signed by unknown authority` in the app | The `ca-trust-bundle` isn't mounted, or the pod started before trust-manager copied it (restart it) |
 | Access denied on the Authentik side | The user isn't in the group bound to the application |
+| Grafana `Login failed: InternalError`, its logs show `Error getting email address` on `.../userinfo//emails` | The Authentik user has no email, Grafana requires one (set it in "Directory" > "Users") |
 | Logged in but no permissions | The `groups` claim is missing (`profile` scope) or doesn't match the app's role mapping |
 | `authentik-secrets` degraded, `Secret does not exist` | An OpenBao key read by the `ExternalSecret` wasn't created |
 | Blueprint error about a missing value (`client_secret: This field may not be null`) | The client secret env var was empty when it applied: create the OpenBao key, restart Authentik, then click "Apply" on the blueprint (it's otherwise only retried hourly) |
