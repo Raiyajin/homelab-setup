@@ -14,7 +14,7 @@ entries:
       authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
       invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
       mode: proxy
-      external_host: https://lol-draft.homelab.internal
+      external_host: https://draft.lol.homelab.internal
       internal_host: http://lol-draft.lol-draft.svc:8080
 
   - model: authentik_core.application
@@ -24,7 +24,7 @@ entries:
     attrs:
       name: lol-draft
       provider: !KeyOf lol-draft-provider
-      meta_launch_url: https://lol-draft.homelab.internal
+      meta_launch_url: https://draft.lol.homelab.internal
 
   # Phase 1: homelab-admins only (Discord users come with the public exposure)
   - model: authentik_policies.policybinding
