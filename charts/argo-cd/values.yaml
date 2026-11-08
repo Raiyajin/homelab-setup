@@ -37,8 +37,8 @@ projects:
       - namespace: '*'
     sourceRepos:
       - https://github.com/kubernetes-sigs/gateway-api.git
-      # chart dependencies (e.g. authentik -> postgres)
       - ghcr.io/raiyajin/charts
+      - https://charts.goauthentik.io
   apps:
     destinations:
       - namespace: '!kube-system'
