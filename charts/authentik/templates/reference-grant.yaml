@@ -1,0 +1,16 @@
+# Lets HTTPRoutes of apps behind a Proxy provider send traffic to authentik-server (the embedded outpost).
+# The routes stay in the app namespace, the only one their Gateway listener accepts
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: authentik-proxy
+  namespace: authentik
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: longhorn-system
+  to:
+  - group: ""
+    kind: Service
+    name: authentik-server

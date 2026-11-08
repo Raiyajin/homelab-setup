@@ -34,6 +34,14 @@ I chose Authentik over Dex (which only federates an external provider such as Gi
 | Argo Workflows | `argo-workflows` | `https://argo-workflows.homelab.internal/oauth2/callback` | `homelab-admins` → `argo-admin` SA (`templates/sso-rbac.yaml`) |
 | Grafana | `grafana` | `https://grafana.homelab.internal/login/generic_oauth` | `homelab-admins` → `Admin`, others `Viewer` (`role_attribute_path`) |
 
+### Apps behind the proxy
+
+Apps without a login of their own (Longhorn) use a **Proxy provider** instead: their HTTPRoute sends the traffic to `authentik-server`, whose embedded outpost asks for an Authentik login, then forwards the request to the app's Service.
+
+| App | External host | Internal host |
+|---|---|---|
+| Longhorn | `https://longhorn.homelab.internal` | `http://longhorn-frontend.longhorn-system.svc:80` |
+
 ## Setup
 
 ### Prerequisites
@@ -188,6 +196,24 @@ kubectl -n authentik rollout restart deploy/authentik-worker deploy/authentik-se
 3. Check that the blueprint applied in "System" > "Blueprints" (status "successful"). Errors only show up there, not in Argo CD.
 4. Log in to the app with your user (not `akadmin`, which isn't in `homelab-admins`). Use a private window if you're logged in to Authentik as `akadmin`.
 
+## Putting an app behind the proxy
+
+For an app without OIDC support. No client secret is needed.
+
+1. Write `charts/authentik/blueprints/myapp.yaml` with a `authentik_providers_proxy.proxyprovider` (`mode: proxy`, `external_host`, `internal_host`), an application and a policy binding, see `blueprints/longhorn.yaml`. Authentik fills in the OAuth settings of proxy providers itself.
+2. Add the provider to the embedded outpost entry in `blueprints/longhorn.yaml`: its `providers` list replaces the outpost's, so it must list every proxy provider.
+3. Add the app namespace to `from` in `charts/authentik/templates/reference-grant.yaml`. The HTTPRoute stays in the app namespace (the only one its Gateway listener accepts) and needs this grant to target a Service in `authentik`.
+4. Point the app's HTTPRoute at the outpost:
+
+```yaml
+    backendRefs:
+    - name: authentik-server
+      namespace: authentik
+      port: 80
+```
+
+> **Note:** only for browser traffic. Anything calling the hostname from a pod or a script (a Grafana datasource, an API client) gets redirected to the login page: point it at the in-cluster Service instead, or exempt its paths with `skip_path_regex`.
+
 ## Troubleshooting
 
 | Symptom | Cause |
@@ -199,6 +225,8 @@ kubectl -n authentik rollout restart deploy/authentik-worker deploy/authentik-se
 | Logged in but no permissions | The `groups` claim is missing (`profile` scope) or doesn't match the app's role mapping |
 | `authentik-secrets` degraded, `Secret does not exist` | An OpenBao key read by the `ExternalSecret` wasn't created |
 | Blueprint error about a missing value (`client_secret: This field may not be null`) | The client secret env var was empty when it applied: create the OpenBao key, restart Authentik, then click "Apply" on the blueprint (it's otherwise only retried hourly) |
+| Proxied app returns a 404 from Authentik | The provider isn't in the embedded outpost's `providers` list, or its `external_host` doesn't match the hostname |
+| Proxied app route not accepted (`RefNotPermitted`) | The app namespace is missing from the ReferenceGrant |
 | `No file management backend configured` when uploading an image | `/data` isn't a mounted volume on the server |
 
 The Authentik server logs show the details of each failed login:

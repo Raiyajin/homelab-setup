@@ -14,6 +14,9 @@ spec:
     - path:
         type: PathPrefix
         value: /
+    # Longhorn has no login: Authentik's embedded outpost proxies to longhorn-frontend after login
+    # (charts/authentik/blueprints/longhorn.yaml)
     backendRefs:
-    - name: longhorn-frontend
+    - name: authentik-server
+      namespace: authentik
       port: 80 
