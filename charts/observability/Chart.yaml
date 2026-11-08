@@ -12,7 +12,7 @@ dependencies:
   - name: kube-prometheus-stack
     alias: promstack
     repository: oci://ghcr.io/prometheus-community/charts
-    version: 92.22.0
+    version: 93.1.0
 
   - name: loki
     repository: oci://ghcr.io/grafana-community/helm-charts
