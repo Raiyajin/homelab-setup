@@ -40,3 +40,45 @@ spec:
       - name: sha
         valueFrom:
           event: payload.after
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowEventBinding
+metadata:
+  name: lol-draft-ci
+  namespace: argo
+spec:
+  event:
+    # Same-repo PRs only: fork code must never run with the GitHub token
+    selector: >-
+      metadata["x-github-event"] == ["pull_request"]
+      && payload.repository.full_name == "Raiyajin/lol-draft"
+      && payload.action in ["opened", "synchronize", "reopened"]
+      && payload.pull_request.head.repo.full_name == "Raiyajin/lol-draft"
+  submit:
+    workflowTemplateRef:
+      name: lol-draft-ci
+    arguments:
+      parameters:
+      - name: sha
+        valueFrom:
+          event: payload.pull_request.head.sha
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowEventBinding
+metadata:
+  name: lol-draft-release
+  namespace: argo
+spec:
+  event:
+    selector: >-
+      metadata["x-github-event"] == ["push"]
+      && payload.repository.full_name == "Raiyajin/lol-draft"
+      && payload.ref == "refs/heads/main"
+  submit:
+    workflowTemplateRef:
+      name: lol-draft-release
+    arguments:
+      parameters:
+      - name: sha
+        valueFrom:
+          event: payload.after

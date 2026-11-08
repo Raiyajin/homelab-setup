@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: lol-draft-ci
+  namespace: argo
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: main
+  # Always reports the final status, otherwise a crashed run leaves the PR pending forever
+  onExit: report
+  arguments:
+    parameters:
+    - name: sha
+  templates:
+  - name: main
+    steps:
+    - - name: pending
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/lol-draft}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          - {name: context, value: CI}
+          - {name: state, value: pending}
+    - - name: backend
+        template: backend
+      - name: frontend
+        template: frontend
+
+  - name: report
+    steps:
+    - - name: status
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/lol-draft}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          - {name: context, value: CI}
+          - {name: state, value: "{{workflow.status}}"}
+
+  # Also used by lol-draft-release (templateRef), which passes the same `sha` parameter
+  - name: backend
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/lol-draft.git
+          revision: "{{workflow.parameters.sha}}"
+          usernameSecret: {name: github-pat, key: username}
+          passwordSecret: {name: github-pat, key: token}
+    container:
+      image: rust:1-slim-bookworm
+      workingDir: /src/backend
+      command: [sh, -euc]
+      args:
+      - |
+        rustup component add clippy rustfmt
+        cargo fmt --check
+        cargo clippy --all-targets --locked -- -D warnings
+        cargo test --locked
+      resources:
+        requests: {cpu: "1", memory: 2Gi}
+        limits: {memory: 4Gi}
+
+  - name: frontend
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/lol-draft.git
+          revision: "{{workflow.parameters.sha}}"
+          usernameSecret: {name: github-pat, key: username}
+          passwordSecret: {name: github-pat, key: token}
+    container:
+      image: node:22-alpine
+      workingDir: /src/frontend
+      command: [sh, -euc]
+      args:
+      - npm ci && npm test && npm run build
+      resources:
+        requests: {cpu: 500m, memory: 1Gi}

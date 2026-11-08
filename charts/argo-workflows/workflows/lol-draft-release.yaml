@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: lol-draft-release
+  namespace: argo
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: release
+  # Two quick merges must not race on the deploy commit
+  synchronization:
+    mutexes:
+    - name: lol-draft-release
+  onExit: report
+  arguments:
+    parameters:
+    - name: sha
+  templates:
+  - name: release
+    steps:
+    - - name: backend
+        templateRef: {name: lol-draft-ci, template: backend}
+      - name: frontend
+        templateRef: {name: lol-draft-ci, template: frontend}
+    - - name: image
+        template: image
+    - - name: deploy
+        template: deploy
+
+  - name: report
+    steps:
+    - - name: status
+        templateRef: {name: github-status, template: set}
+        arguments:
+          parameters:
+          - {name: repo, value: Raiyajin/lol-draft}
+          - {name: sha, value: "{{workflow.parameters.sha}}"}
+          - {name: context, value: Release}
+          - {name: state, value: "{{workflow.status}}"}
+
+  # kaniko: no Docker daemon and no privileges, so it runs under the default `baseline` Pod Security
+  # (rootless buildkit would need seccomp Unconfined). martizih/kaniko is the maintained fork.
+  - name: image
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/lol-draft.git
+          revision: "{{workflow.parameters.sha}}"
+          usernameSecret: {name: github-pat, key: username}
+          passwordSecret: {name: github-pat, key: token}
+    container:
+      image: martizih/kaniko:v1.29.0-debug
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef: {name: github-pat, key: token}
+      command: [sh, -euc]
+      args:
+      - |
+        auth=$(printf 'Raiyajin:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')
+        printf '{"auths":{"ghcr.io":{"auth":"%s"}}}' "$auth" > /kaniko/.docker/config.json
+        /kaniko/executor \
+          --context=dir:///src \
+          --dockerfile=/src/Dockerfile \
+          --destination=ghcr.io/raiyajin/lol-draft:{{workflow.parameters.sha}} \
+          --destination=ghcr.io/raiyajin/lol-draft:latest
+      resources:
+        requests: {cpu: "2", memory: 4Gi}
+        limits: {memory: 6Gi}
+
+  # GitOps deploy: Argo CD syncs homelab-argo-apps after this commit
+  - name: deploy
+    container:
+      image: alpine/git:v2.49.1
+      env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef: {name: github-pat, key: token}
+      command: [sh, -euc]
+      args:
+      - |
+        git clone --depth 1 "https://Raiyajin:${GITHUB_TOKEN}@github.com/Raiyajin/homelab-argo-apps.git" /repo
+        cd /repo
+        # apps/lol-draft/values.yaml has a single 4-space indented `tag:` line (lol-draft.image.tag)
+        sed -i -E 's/^(    tag: ).*/\1"{{workflow.parameters.sha}}"/' apps/lol-draft/values.yaml
+        git diff --quiet && { echo "already deployed"; exit 0; }
+        git -c user.name=argo-workflows -c user.email=noreply@github.com \
+          commit -am "chore(lol-draft): deploy $(echo {{workflow.parameters.sha}} | cut -c1-7)"
+        git push
