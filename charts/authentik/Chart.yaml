@@ -5,7 +5,7 @@ type: application
 version: 0.1.0
 dependencies:
   - name: authentik
-    repository: https://charts.goauthentik.io
+    repository: oci://ghcr.io/goauthentik/helm-charts
     version: 2026.8.5
   - name: postgres
     repository: oci://ghcr.io/raiyajin/charts

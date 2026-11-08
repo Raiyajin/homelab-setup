@@ -38,7 +38,7 @@ projects:
     sourceRepos:
       - https://github.com/kubernetes-sigs/gateway-api.git
       - ghcr.io/raiyajin/charts
-      - https://charts.goauthentik.io
+      - ghcr.io/goauthentik/helm-charts
   apps:
     destinations:
       - namespace: '!kube-system'
