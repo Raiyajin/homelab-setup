@@ -142,6 +142,21 @@ gateway:
             matchLabels:
               kubernetes.io/metadata.name: longhorn-system
 
+    - name: lol-draft-https
+      protocol: HTTPS
+      port: 443
+      hostname: "lol-draft.homelab.internal"
+      tls:
+        mode: Terminate
+        certificateRefs:
+        - name: lol-draft-tls-secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: lol-draft
+
     - name: argo-workflows-https
       protocol: HTTPS
       port: 443
