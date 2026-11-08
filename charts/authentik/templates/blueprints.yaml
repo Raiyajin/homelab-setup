@@ -1,0 +1,8 @@
+# Mounted by the worker (authentik.blueprints.configMaps), which applies each `.yaml` key
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentik-blueprints
+  namespace: authentik
+data:
+{{ (.Files.Glob "blueprints/*.yaml").AsConfig | indent 2 }}

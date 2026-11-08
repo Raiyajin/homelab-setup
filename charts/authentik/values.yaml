@@ -6,6 +6,11 @@ authentik:
       - secretRef:
           name: authentik-secrets
 
+  # Apps, providers and groups as code (blueprints/, templates/blueprints.yaml)
+  blueprints:
+    configMaps:
+      - authentik-blueprints
+
   authentik:
     error_reporting:
       enabled: false
