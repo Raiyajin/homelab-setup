@@ -181,8 +181,9 @@ promstack:
         url: https://loki-gateway.homelab.internal
         jsonData:
           derivedFields:
-            - datasourceUid: Tempo
-              matcherRegex: "trace_id=(\\w+)"
+            - datasourceUid: tempo
+              # logfmt trace_id=abc and JSON "trace_id":"abc"
+              matcherRegex: "trace_id\"?[=:]\"?(\\w+)"
               name: TraceID
               url: "$${__value.raw}"
           httpHeaderName1: "X-Scope-OrgID"
@@ -191,6 +192,8 @@ promstack:
 
       - name: Tempo
         type: tempo
+        # referenced by the Loki derived field and Prometheus exemplars
+        uid: tempo
         access: proxy
         url: https://tempo.homelab.internal
         jsonData:
