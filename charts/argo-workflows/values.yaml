@@ -40,8 +40,29 @@ argo-workflows:
       create: true
 
   server:
-    # `client`: the UI asks for a bearer token, and GitHub webhooks are mapped to the
-    # `github.com` SA (templates/webhook.yaml). Not `server`: anyone on the LAN could
-    # submit a workflow that reads the GitHub token.
+    # `sso`: UI login through Authentik, users act as the SA their groups match (templates/sso-rbac.yaml).
+    # `client`: bearer tokens for the CLI; GitHub webhooks are mapped to the `github.com` SA
+    # (templates/webhook.yaml). Not `server`: anyone on the LAN could submit a workflow that reads the GitHub token.
     authModes:
+      - sso
       - client
+    sso:
+      enabled: true
+      issuer: https://auth.homelab.internal/application/o/argo-workflows/
+      redirectUrl: https://argo-workflows.homelab.internal/oauth2/callback
+      # `profile` carries the `groups` claim (Authentik)
+      scopes:
+        - profile
+        - email
+    # Trusts the homelab CA (auth.homelab.internal), the bundle also holds the public CAs
+    extraEnv:
+      - name: SSL_CERT_FILE
+        value: /etc/ssl/homelab/trust-bundle.pem
+    volumes:
+      - name: ca-trust-bundle
+        configMap:
+          name: ca-trust-bundle
+    volumeMounts:
+      - name: ca-trust-bundle
+        mountPath: /etc/ssl/homelab
+        readOnly: true
