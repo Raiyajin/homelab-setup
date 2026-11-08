@@ -43,7 +43,8 @@ spec:
     inputs:
       artifacts:
       - name: source
-        path: /src
+        # kaniko runs RUN steps in its own filesystem: a context at /src would shadow the Dockerfile's WORKDIR /src
+        path: /kaniko/build-context
         git:
           repo: https://github.com/Raiyajin/lol-draft.git
           revision: "{{workflow.parameters.sha}}"
@@ -61,8 +62,8 @@ spec:
         auth=$(printf 'Raiyajin:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')
         printf '{"auths":{"ghcr.io":{"auth":"%s"}}}' "$auth" > /kaniko/.docker/config.json
         /kaniko/executor \
-          --context=dir:///src \
-          --dockerfile=/src/Dockerfile \
+          --context=dir:///kaniko/build-context \
+          --dockerfile=/kaniko/build-context/Dockerfile \
           --destination=ghcr.io/raiyajin/lol-draft:{{workflow.parameters.sha}} \
           --destination=ghcr.io/raiyajin/lol-draft:latest
       resources:
