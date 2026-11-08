@@ -63,12 +63,37 @@ argo-cd:
     secret:
       # resolved from the ExternalSecret synced from OpenBao
       githubSecret: "$argocd-github-webhook:secret"
+    # SSO through Authentik (charts/authentik/blueprints/argocd.yaml), local admin stays as break-glass
+    cm:
+      oidc.config: |
+        name: Authentik
+        issuer: https://auth.homelab.internal/application/o/argocd/
+        clientID: argocd
+        clientSecret: $argocd-oidc:client_secret
+        requestedScopes: [openid, profile, email]
+    rbac:
+      policy.csv: |
+        g, homelab-admins, role:admin
 
   server:
     metrics: &metrics
       enabled: true
       serviceMonitor:
         enabled: true
+    # Trusts the homelab CA (auth.homelab.internal), the bundle also holds the public CAs
+    env:
+      - name: SSL_CERT_FILE
+        value: /etc/ssl/homelab/trust-bundle.pem
+    volumes:
+      - name: ca-trust-bundle
+        configMap:
+          name: ca-trust-bundle
+          # don't block the UI if trust-manager hasn't copied it yet (Go then uses the image CAs)
+          optional: true
+    volumeMounts:
+      - name: ca-trust-bundle
+        mountPath: /etc/ssl/homelab
+        readOnly: true
     resources:
       limits:
         memory: 128Mi

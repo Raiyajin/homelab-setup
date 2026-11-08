@@ -2,6 +2,17 @@ apps:
   argo-cd:
     namespace: argocd
     project: default
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      managedNamespaceMetadata:
+        labels:
+          # trust-manager copies the homelab CA bundle (ca-trust-bundle) for the Authentik OIDC issuer
+          cert-manager.io/trust: enabled
+      syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
 
   cilium:
     namespace: kube-system
