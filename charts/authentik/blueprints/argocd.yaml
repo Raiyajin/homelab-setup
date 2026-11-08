@@ -18,6 +18,10 @@ entries:
       client_type: confidential
       client_id: argocd
       client_secret: !Env ARGOCD_OIDC_CLIENT_SECRET
+      # Empty when created from a blueprint (the UI fills it), authorize then fails as "malformed"
+      grant_types:
+        - authorization_code
+        - refresh_token
       redirect_uris:
         - matching_mode: strict
           url: https://argocd.homelab.internal/auth/callback
