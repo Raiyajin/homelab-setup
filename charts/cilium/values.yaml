@@ -145,7 +145,7 @@ gateway:
     - name: lol-draft-https
       protocol: HTTPS
       port: 443
-      hostname: "lol-draft.homelab.internal"
+      hostname: "draft.lol.homelab.internal"
       tls:
         mode: Terminate
         certificateRefs:
