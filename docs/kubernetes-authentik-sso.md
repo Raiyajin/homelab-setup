@@ -32,6 +32,7 @@ I chose Authentik over Dex (which only federates an external provider such as Gi
 |---|---|---|---|
 | Argo CD | `argocd` | `https://argocd.homelab.internal/auth/callback` | `homelab-admins` → `role:admin` (`configs.rbac.policy.csv`) |
 | Argo Workflows | `argo-workflows` | `https://argo-workflows.homelab.internal/oauth2/callback` | `homelab-admins` → `argo-admin` SA (`templates/sso-rbac.yaml`) |
+| Grafana | `grafana` | `https://grafana.homelab.internal/login/generic_oauth` | `homelab-admins` → `Admin`, others `Viewer` (`role_attribute_path`) |
 
 ## Setup
 

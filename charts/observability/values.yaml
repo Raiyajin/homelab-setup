@@ -82,6 +82,30 @@ promstack:
         sampler_param: 1
       tracing.opentelemetry.otlp:
         address: observability-alloy.observability.svc:4317
+      # OAuth redirect URI is built from it
+      server:
+        root_url: https://grafana.homelab.internal
+      # SSO through Authentik (charts/authentik/blueprints/grafana.yaml), the local admin stays as break-glass
+      auth:
+        signout_redirect_url: https://auth.homelab.internal/application/o/grafana/end-session/
+      auth.generic_oauth:
+        enabled: true
+        name: Authentik
+        client_id: grafana
+        # client_secret: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET (envValueFrom)
+        scopes: openid profile email
+        auth_url: https://auth.homelab.internal/application/o/authorize/
+        token_url: https://auth.homelab.internal/application/o/token/
+        api_url: https://auth.homelab.internal/application/o/userinfo/
+        login_attribute_path: preferred_username
+        name_attribute_path: name
+        email_attribute_path: email
+        role_attribute_path: contains(groups, 'homelab-admins') && 'Admin' || 'Viewer'
+    envValueFrom:
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+        secretKeyRef:
+          name: grafana-oidc
+          key: client_secret
     admin:
       existingSecret: "grafana-admin-credentials"
       userKey: "user"
