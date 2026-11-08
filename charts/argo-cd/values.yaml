@@ -39,6 +39,7 @@ projects:
       - https://github.com/kubernetes-sigs/gateway-api.git
       - ghcr.io/raiyajin/charts
       - ghcr.io/goauthentik/helm-charts
+      - ghcr.io/argoproj/argo-helm
   apps:
     destinations:
       - namespace: '!kube-system'
