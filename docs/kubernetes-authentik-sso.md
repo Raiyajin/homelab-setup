@@ -197,7 +197,7 @@ kubectl -n authentik rollout restart deploy/authentik-worker deploy/authentik-se
 | Access denied on the Authentik side | The user isn't in the group bound to the application |
 | Logged in but no permissions | The `groups` claim is missing (`profile` scope) or doesn't match the app's role mapping |
 | `authentik-secrets` degraded, `Secret does not exist` | An OpenBao key read by the `ExternalSecret` wasn't created |
-| Blueprint error about a missing value | The client secret env var is empty: create the OpenBao key, then restart Authentik |
+| Blueprint error about a missing value (`client_secret: This field may not be null`) | The client secret env var was empty when it applied: create the OpenBao key, restart Authentik, then click "Apply" on the blueprint (it's otherwise only retried hourly) |
 | `No file management backend configured` when uploading an image | `/data` isn't a mounted volume on the server |
 
 The Authentik server logs show the details of each failed login:
