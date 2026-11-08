@@ -20,6 +20,18 @@ authentik:
       user: authentik
 
   server:
+    # Uploaded files (templates/pvc.yaml); RWO volume, so the old pod must stop before the new one starts
+    deploymentStrategy:
+      type: Recreate
+    securityContext:
+      fsGroup: 1000
+    volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: authentik-data
+    volumeMounts:
+      - name: data
+        mountPath: /data
     route:
       main:
         enabled: true

@@ -1,0 +1,12 @@
+# Uploaded files (app icons, branding). Authentik only allows uploads when /data is a mount
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: authentik-data
+  namespace: authentik
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
