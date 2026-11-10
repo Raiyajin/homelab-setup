@@ -78,6 +78,10 @@ spec:
       workingDir: /src/frontend
       command: [sh, -euc]
       args:
-      - npm ci && npm test && npm run build
+      # npm doesn't retry a reset connection (ECONNRESET) itself
+      - |
+        npm ci || (sleep 10 && npm ci) || (sleep 30 && npm ci)
+        npm test
+        npm run build
       resources:
         requests: {cpu: 500m, memory: 1Gi}
