@@ -54,6 +54,10 @@ argo-workflows:
       scopes:
         - profile
         - email
+    # The UI lists all namespaces by default, but SSO users only have rights in `argo`
+    extraArgs:
+      - --namespaced
+      - --managed-namespace=argo
     # Trusts the homelab CA (auth.homelab.internal), the bundle also holds the public CAs
     extraEnv:
       - name: SSL_CERT_FILE
