@@ -31,3 +31,31 @@ subjects:
 - kind: ServiceAccount
   name: argo-admin
   namespace: argo
+---
+# The chart's admin role has no pod rights: UI retry deletes the reset nodes' pods, and logs read pods/log
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-admin-pods
+  namespace: argo
+rules:
+- apiGroups: [""]
+  resources: [pods]
+  verbs: [get, list, watch, delete]
+- apiGroups: [""]
+  resources: [pods/log]
+  verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-admin-pods
+  namespace: argo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argo-admin-pods
+subjects:
+- kind: ServiceAccount
+  name: argo-admin
+  namespace: argo
