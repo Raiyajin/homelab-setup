@@ -10,6 +10,11 @@ entries:
       domain: authentik-default
     attrs:
       branding_title: lol-draft
+      # dark whatever the visitor's system theme: the light sidebar clashes with the background
+      attributes:
+        settings:
+          theme:
+            base: dark
       branding_default_flow_background: login-background.jpg
       branding_custom_css: |
         :root {
@@ -56,3 +61,10 @@ entries:
       slug: default-invalidation-flow
     attrs:
       layout: sidebar_left
+
+  # "Discord" written on the button, not just its icon: friends only have that way in
+  - model: authentik_stages_identification.identificationstage
+    identifiers:
+      name: default-authentication-identification
+    attrs:
+      show_source_labels: true
