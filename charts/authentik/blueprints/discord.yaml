@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+# Discord login for friends: only members of the Discord server holding one role get in, and only to lol-draft
+# (group lol-draft-users; every other app is bound to homelab-admins only).
+# Client id/secret, guild and role ids come from authentik-secrets (OpenBao authentik/discord), never from Git.
+# Discord app redirect: https://auth.lmo-software.fr/source/oauth/callback/discord/
+version: 1
+metadata:
+  name: homelab discord
+entries:
+  - model: authentik_core.group
+    id: lol-draft-users
+    identifiers:
+      name: lol-draft-users
+
+  - model: authentik_sources_oauth.oauthsource
+    id: discord-source
+    identifiers:
+      slug: discord
+    attrs:
+      name: Discord
+      provider_type: discord
+      consumer_key: !Env DISCORD_CLIENT_ID
+      consumer_secret: !Env DISCORD_CLIENT_SECRET
+      # the role check below reads the user's membership in the guild
+      additional_scopes: guilds.members.read
+      authentication_flow: !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      enrollment_flow: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
+      user_matching_mode: identifier
+
+  # Checked at every Discord login (enrollment and returning users): losing the role locks you out at the next login
+  - model: authentik_policies_expression.expressionpolicy
+    id: discord-role
+    identifiers:
+      name: discord-guild-role
+    attrs:
+      expression: !Format
+        - |
+          source = context.get("source")
+          if source is None or source.provider_type != "discord":
+              return True
+          connection = context.get("goauthentik.io/sources/connection")
+          if not connection:
+              return False
+          member = requests.get(
+              "https://discord.com/api/users/@me/guilds/%s/member",
+              headers={"Authorization": "Bearer " + connection.access_token},
+              timeout=10,
+          )
+          if member.status_code == 200 and "%s" in member.json().get("roles", []):
+              return True
+          ak_message("You need the lol-draft role on the Discord server to log in.")
+          return False
+        - !Env DISCORD_GUILD_ID
+        - !Env DISCORD_ROLE_ID
+
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
+      policy: !KeyOf discord-role
+    attrs:
+      order: 0
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      policy: !KeyOf discord-role
+    attrs:
+      order: 0
+
+  # New Discord users land in lol-draft-users
+  - model: authentik_stages_user_write.userwritestage
+    identifiers:
+      name: default-source-enrollment-write
+    attrs:
+      create_users_group: !KeyOf lol-draft-users
+
+  # "Log in with Discord" on the login page
+  - model: authentik_stages_identification.identificationstage
+    identifiers:
+      name: default-authentication-identification
+    attrs:
+      sources:
+        - !KeyOf discord-source

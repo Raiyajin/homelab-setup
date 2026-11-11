@@ -1,11 +1,18 @@
 # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
 # lol-draft has no login: the embedded outpost (in authentik-server) proxies it after an Authentik login.
 # Its HTTPRoute (Raiyajin/homelab-argo-apps apps/lol-draft/templates/route.yaml) sends traffic to authentik-server.
-# The outpost's provider list lives in longhorn.yaml.
+# The outpost's provider list lives in longhorn.yaml. Public since phase 2: Discord users (discord.yaml) get in.
 version: 1
 metadata:
   name: homelab lol-draft
 entries:
+  # lol-draft-users is created by discord.yaml
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: homelab discord
+      required: true
+
   - model: authentik_providers_proxy.proxyprovider
     id: lol-draft-provider
     identifiers:
@@ -14,8 +21,10 @@ entries:
       authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
       invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
       mode: proxy
-      external_host: https://draft.lol.homelab.internal
+      external_host: https://draft.lol.lmo-software.fr
       internal_host: http://lol-draft.lol-draft.svc:8080
+      # the proxy session: losing the Discord role takes effect within a day
+      access_token_validity: hours=24
 
   - model: authentik_core.application
     id: lol-draft-app
@@ -24,12 +33,17 @@ entries:
     attrs:
       name: lol-draft
       provider: !KeyOf lol-draft-provider
-      meta_launch_url: https://draft.lol.homelab.internal
+      meta_launch_url: https://draft.lol.lmo-software.fr
 
-  # Phase 1: homelab-admins only (Discord users come with the public exposure)
   - model: authentik_policies.policybinding
     identifiers:
       target: !KeyOf lol-draft-app
       group: !Find [authentik_core.group, [name, homelab-admins]]
     attrs:
       order: 0
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !KeyOf lol-draft-app
+      group: !Find [authentik_core.group, [name, lol-draft-users]]
+    attrs:
+      order: 1
