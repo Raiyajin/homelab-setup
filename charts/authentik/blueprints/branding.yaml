@@ -10,6 +10,9 @@ entries:
       domain: authentik-default
     attrs:
       branding_title: lol-draft
+      # Discord users are "external": Authentik's own dashboard refuses them, so a login without a destination
+      # (straight on auth.lmo-software.fr, after a log out) sends them to lol-draft instead
+      default_application: !Find [authentik_core.application, [slug, lol-draft]]
       # dark whatever the visitor's system theme: the light sidebar clashes with the background
       attributes:
         settings:
