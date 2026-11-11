@@ -45,12 +45,13 @@ entries:
     identifiers:
       managed: goauthentik.io/outposts/embedded
     attrs:
-      # Replaces the whole config: the defaults plus the browser login host, public so Discord users can reach it
-      # (LAN clients reach it too, through the router's NAT reflection)
+      # Replaces the whole config. authentik_host is where the outpost sends browsers to log in (the embedded
+      # outpost ignores authentik_host_browser): public so Discord users can reach it; LAN clients reach it too,
+      # through the router's NAT reflection
       config:
         log_level: info
-        authentik_host: https://auth.homelab.internal
-        authentik_host_browser: https://auth.lmo-software.fr
+        authentik_host: https://auth.lmo-software.fr
+        authentik_host_browser: ""
         authentik_host_insecure: false
         refresh_interval: minutes=5
         object_naming_template: ak-outpost-%(name)s
