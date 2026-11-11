@@ -93,6 +93,10 @@ apps:
   argo-workflows:
     namespace: argo
     project: infrastructure
+    annotations:
+      # The WorkflowTemplate CRD's spec is one opaque block (preserve-unknown-fields): the default diff
+      # under server-side apply reported template changes as Synced and never applied them
+      argocd.argoproj.io/compare-options: ServerSideDiff=true
     syncPolicy:
       automated:
         prune: true

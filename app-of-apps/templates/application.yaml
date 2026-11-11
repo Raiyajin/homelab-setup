@@ -10,6 +10,9 @@ metadata:
   {{- end }}
   annotations:
     argocd.argoproj.io/manifest-generate-paths: .;..
+    {{- with $apps.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   project: {{ $apps.project | default $.Values.defaults.project }}
   source:
