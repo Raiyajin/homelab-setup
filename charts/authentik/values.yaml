@@ -35,7 +35,7 @@ authentik:
     route:
       main:
         enabled: true
-        # auth.lmo-software.fr: the public login page (Discord users of lol-draft), on the public Gateway
+        # auth.lmo-software.fr: the public login page (Discord users of Pickban), on the public Gateway
         # (Raiyajin/homelab-argo-apps apps/media-server values.yaml); external-dns publishes it
         hostnames:
           - auth.homelab.internal

@@ -21,7 +21,8 @@ entries:
       authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
       invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
       mode: proxy
-      external_host: https://draft.lol.lmo-software.fr
+      # Pickban's public name; draft.lol.lmo-software.fr (its old name) redirects here at the Gateway
+      external_host: https://pickban.lmo-software.fr
       internal_host: http://lol-draft.lol-draft.svc:8080
       # the proxy session: losing the Discord role takes effect within a day
       access_token_validity: hours=24
@@ -34,7 +35,7 @@ entries:
       # shown on the login page ("Log in to continue to Pickban")
       name: Pickban
       provider: !KeyOf lol-draft-provider
-      meta_launch_url: https://draft.lol.lmo-software.fr
+      meta_launch_url: https://pickban.lmo-software.fr
 
   - model: authentik_policies.policybinding
     identifiers:
