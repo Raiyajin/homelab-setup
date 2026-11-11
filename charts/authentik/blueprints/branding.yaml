@@ -67,4 +67,8 @@ entries:
     identifiers:
       name: default-authentication-identification
     attrs:
+      # the stage's validation needs its fields and sources restated (same values as discord.yaml / the default)
+      user_fields: [email, username]
+      sources:
+        - !Find [authentik_sources_oauth.oauthsource, [slug, discord]]
       show_source_labels: true
