@@ -1,0 +1,68 @@
+# The worker misses ConfigMap updates of the blueprints (kubelet swaps them in through a hidden directory its file
+# watcher never sees created), so they would only apply at Authentik's hourly discovery. After each Argo CD sync of
+# this app, restart the worker: it applies every blueprint at startup.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blueprints-reload
+  namespace: authentik
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: blueprints-reload
+  namespace: authentik
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  resourceNames: ["{{ .Release.Name }}-worker"]
+  verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: blueprints-reload
+  namespace: authentik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: blueprints-reload
+subjects:
+- kind: ServiceAccount
+  name: blueprints-reload
+  namespace: authentik
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: blueprints-reload
+  namespace: authentik
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      serviceAccountName: blueprints-reload
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: restart
+        image: alpine/k8s:1.37.2
+        command: ["kubectl", "-n", "authentik", "rollout", "restart", "deployment/{{ .Release.Name }}-worker"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
