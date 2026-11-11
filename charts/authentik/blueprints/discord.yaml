@@ -53,15 +53,28 @@ entries:
         - !Env DISCORD_GUILD_ID
         - !Env DISCORD_ROLE_ID
 
+  # Both source flows already carry a "…-if-sso" binding that passes for every Discord login: with the default
+  # "any" mode it alone would let anyone in, so every binding (the role check too) must pass
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-source-enrollment
+    attrs:
+      policy_engine_mode: all
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-source-authentication
+    attrs:
+      policy_engine_mode: all
+  # Bindings target the flow's policy-binding row (a flow !Find gives the flow's own id, which the re-apply can't match)
   - model: authentik_policies.policybinding
     identifiers:
-      target: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
+      target: !Find [authentik_policies.policybindingmodel, [flow__slug, default-source-enrollment]]
       policy: !Find [authentik_policies_expression.expressionpolicy, [name, discord-guild-role]]
     attrs:
       order: 0
   - model: authentik_policies.policybinding
     identifiers:
-      target: !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      target: !Find [authentik_policies.policybindingmodel, [flow__slug, default-source-authentication]]
       policy: !Find [authentik_policies_expression.expressionpolicy, [name, discord-guild-role]]
     attrs:
       order: 0
