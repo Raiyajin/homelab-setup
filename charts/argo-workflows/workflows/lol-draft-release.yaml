@@ -85,6 +85,14 @@ spec:
       command: [sh, -euc]
       args:
       - |
+        # A deploy restarts the app and drops its rooms (kept in memory): wait while a captain has a room open
+        # (GET /api/rooms/busy, every 30 s, 45 min at most). Anything but a "busy":N answer counts as 0
+        for i in $(seq 1 90); do
+          busy=$(wget -qO- -T 10 http://lol-draft.lol-draft.svc:8080/api/rooms/busy 2>/dev/null | grep -o '"busy":[0-9]*' | cut -d: -f2 || true)
+          [ "${busy:-0}" -eq 0 ] && break
+          echo "$busy room(s) in use, deploy waits ($i/90)"
+          sleep 30
+        done
         git clone --depth 1 "https://Raiyajin:${GITHUB_TOKEN}@github.com/Raiyajin/homelab-argo-apps.git" /repo
         cd /repo
         # apps/lol-draft/values.yaml has a single 4-space indented `tag:` line (lol-draft.image.tag)
