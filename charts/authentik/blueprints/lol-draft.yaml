@@ -31,7 +31,8 @@ entries:
     identifiers:
       slug: lol-draft
     attrs:
-      name: lol-draft
+      # shown on the login page ("Log in to continue to Pickban")
+      name: Pickban
       provider: !KeyOf lol-draft-provider
       meta_launch_url: https://draft.lol.lmo-software.fr
 

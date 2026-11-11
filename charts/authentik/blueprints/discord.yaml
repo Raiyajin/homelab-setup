@@ -70,7 +70,7 @@ entries:
           )
           if member.status_code == 200 and "%s" in member.json().get("roles", []):
               return True
-          ak_message("You need the lol-draft role on the Discord server to log in.")
+          ak_message("You need the Pickban role on the Discord server to log in.")
           return False
         - !Env DISCORD_GUILD_ID
         - !Env DISCORD_ROLE_ID

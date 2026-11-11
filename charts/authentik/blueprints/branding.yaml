@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
-# Login pages: lol-draft look (dark, gold accent) over the background in the data volume.
+# Login pages: Pickban look (dark, gold accent) over the background in the data volume.
 # The image isn't in Git: kubectl -n authentik cp <file> <authentik-server pod>:/data/media/public/login-background.jpg
 version: 1
 metadata:
@@ -9,11 +9,11 @@ entries:
     identifiers:
       domain: authentik-default
     attrs:
-      branding_title: lol-draft
+      branding_title: Pickban
       # Discord users are "external": Authentik's own dashboard refuses them, so a login without a destination
-      # (straight on auth.lmo-software.fr, after a log out) sends them to lol-draft instead
+      # (straight on auth.lmo-software.fr, after a log out) sends them to Pickban instead
       default_application: !Find [authentik_core.application, [slug, lol-draft]]
-      # dark whatever the visitor's system theme: the light sidebar clashes with the background
+      # dark whatever the visitor's system theme: a light card clashes with the background
       attributes:
         settings:
           theme:
@@ -35,35 +35,35 @@ entries:
         }
         .pf-c-button.pf-m-primary { color: #000; }
 
-  # Form on the left, so the art on the right of the background stays visible
+  # Login card in the middle, over the background
   - model: authentik_flows.flow
     identifiers:
       slug: default-authentication-flow
     attrs:
-      title: Log in to lol-draft
-      layout: sidebar_left
+      title: Log in to Pickban
+      layout: stacked
   - model: authentik_flows.flow
     identifiers:
       slug: default-source-authentication
     attrs:
-      title: Log in to lol-draft
-      layout: sidebar_left
+      title: Log in to Pickban
+      layout: stacked
   - model: authentik_flows.flow
     identifiers:
       slug: default-source-enrollment
     attrs:
-      title: Welcome to lol-draft! Pick a username
-      layout: sidebar_left
+      title: Welcome to Pickban! Pick a username
+      layout: stacked
   - model: authentik_flows.flow
     identifiers:
       slug: default-provider-authorization-implicit-consent
     attrs:
-      layout: sidebar_left
+      layout: stacked
   - model: authentik_flows.flow
     identifiers:
       slug: default-invalidation-flow
     attrs:
-      layout: sidebar_left
+      layout: stacked
 
   # "Discord" written on the button, not just its icon: friends only have that way in
   - model: authentik_stages_identification.identificationstage
