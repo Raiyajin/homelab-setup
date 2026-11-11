@@ -56,13 +56,13 @@ entries:
   - model: authentik_policies.policybinding
     identifiers:
       target: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
-      policy: !KeyOf discord-role
+      policy: !Find [authentik_policies_expression.expressionpolicy, [name, discord-guild-role]]
     attrs:
       order: 0
   - model: authentik_policies.policybinding
     identifiers:
       target: !Find [authentik_flows.flow, [slug, default-source-authentication]]
-      policy: !KeyOf discord-role
+      policy: !Find [authentik_policies_expression.expressionpolicy, [name, discord-guild-role]]
     attrs:
       order: 0
 
