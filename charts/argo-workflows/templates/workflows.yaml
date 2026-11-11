@@ -1,5 +1,13 @@
-# Raw Argo manifests: loaded as-is so Argo template expressions are not parsed by Helm
+# Raw Argo manifests: loaded as-is so Argo template expressions are not parsed by Helm.
+# The minified CRDs make each spec one opaque block that Argo CD's diff doesn't look into, so a hash
+# of the document goes in an annotation: any change marks the app OutOfSync and auto-sync applies it.
 {{- range $path, $_ := .Files.Glob "workflows/*.yaml" }}
+{{- range $doc := regexSplit "(?m)^---\\s*$" ($.Files.Get $path) -1 }}
+{{- $obj := fromYaml $doc }}
+{{- if $obj }}
+{{- $_ := set $obj.metadata "annotations" (merge (dict "homelab.internal/content-hash" (sha256sum $doc | trunc 16)) ($obj.metadata.annotations | default dict)) }}
 ---
-{{ $.Files.Get $path }}
+{{ toYaml $obj }}
+{{- end }}
+{{- end }}
 {{- end }}
