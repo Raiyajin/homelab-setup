@@ -12,6 +12,26 @@ entries:
     identifiers:
       name: lol-draft-users
 
+  # Discord display name and avatar on the user; the avatar reaches lol-draft as a request header
+  # (X-Lol-Avatar: the proxy sends a user's `additionalHeaders` attribute), next to X-authentik-name
+  - model: authentik_sources_oauth.oauthsourcepropertymapping
+    id: discord-profile
+    identifiers:
+      name: discord-profile
+    attrs:
+      expression: |
+        uid = info.get("id") or "0"
+        avatar = info.get("avatar")
+        url = (
+            f"https://cdn.discordapp.com/avatars/{uid}/{avatar}.png?size=64"
+            if avatar
+            else f"https://cdn.discordapp.com/embed/avatars/{(int(uid) >> 22) % 6}.png"
+        )
+        return {
+            "name": info.get("global_name") or info.get("username"),
+            "attributes": {"additionalHeaders": {"X-Lol-Avatar": url}},
+        }
+
   - model: authentik_sources_oauth.oauthsource
     id: discord-source
     identifiers:
@@ -26,6 +46,8 @@ entries:
       authentication_flow: !Find [authentik_flows.flow, [slug, default-source-authentication]]
       enrollment_flow: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
       user_matching_mode: identifier
+      user_property_mappings:
+        - !KeyOf discord-profile
 
   # Checked at every Discord login (enrollment and returning users): losing the role locks you out at the next login
   - model: authentik_policies_expression.expressionpolicy
@@ -93,3 +115,18 @@ entries:
     attrs:
       sources:
         - !KeyOf discord-source
+
+  # Returning Discord users: write the mapped profile again, so a new name or avatar shows up at the next login
+  # (the enrollment flow already has its write stage)
+  - model: authentik_stages_user_write.userwritestage
+    id: discord-profile-write
+    identifiers:
+      name: discord-profile-write
+    attrs:
+      user_creation_mode: never_create
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      stage: !KeyOf discord-profile-write
+    attrs:
+      order: -1
