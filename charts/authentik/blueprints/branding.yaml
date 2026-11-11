@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+# Login pages: lol-draft look (dark, gold accent) over the background in the data volume.
+# The image isn't in Git: kubectl -n authentik cp <file> <authentik-server pod>:/data/media/public/login-background.jpg
+version: 1
+metadata:
+  name: homelab branding
+entries:
+  - model: authentik_brands.brand
+    identifiers:
+      domain: authentik-default
+    attrs:
+      branding_title: lol-draft
+      branding_default_flow_background: login-background.jpg
+      branding_custom_css: |
+        :root {
+          --pf-global--primary-color--100: #c8aa6e;
+          --pf-global--primary-color--200: #a8894f;
+          --pf-global--link--Color: #c8aa6e;
+          --pf-global--link--Color--hover: #e2c88f;
+        }
+        .pf-c-login__main {
+          background: rgba(11, 15, 23, 0.82) !important;
+          border: 1px solid #263046;
+          border-top: 3px solid #c8aa6e;
+          border-radius: 6px;
+          backdrop-filter: blur(6px);
+        }
+        .pf-c-button.pf-m-primary { color: #000; }
+
+  # Form on the left, so the art on the right of the background stays visible
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-authentication-flow
+    attrs:
+      title: Log in to lol-draft
+      layout: sidebar_left
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-source-authentication
+    attrs:
+      title: Log in to lol-draft
+      layout: sidebar_left
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-source-enrollment
+    attrs:
+      title: Welcome to lol-draft! Pick a username
+      layout: sidebar_left
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-provider-authorization-implicit-consent
+    attrs:
+      layout: sidebar_left
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-invalidation-flow
+    attrs:
+      layout: sidebar_left
