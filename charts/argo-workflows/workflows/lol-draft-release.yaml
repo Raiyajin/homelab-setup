@@ -59,9 +59,9 @@ spec:
       command: [sh, -euc]
       args:
       - |
-        # --cache reuses the dependency layers (npm ci, cargo deps) while the lockfiles are unchanged
         auth=$(printf 'Raiyajin:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')
         printf '{"auths":{"ghcr.io":{"auth":"%s"}}}' "$auth" > /kaniko/.docker/config.json
+        # --cache reuses the dependency layers (npm ci, cargo deps) while the lockfiles are unchanged
         /kaniko/executor \
           --context=dir:///kaniko/build-context \
           --dockerfile=/kaniko/build-context/Dockerfile \
