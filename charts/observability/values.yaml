@@ -76,6 +76,12 @@ promstack:
 
   grafana:
     enabled: true
+    resources:
+      requests:
+        cpu: 25m
+        memory: 512Mi
+      limits:
+        memory: 1Gi
     grafana.ini:
       tracing.opentelemetry:
         sampler_type: const
@@ -262,6 +268,13 @@ promstack:
       probeSelectorNilUsesHelmValues: false
       scrapeConfigSelectorNilUsesHelmValues: false
       retention: 7d
+      # 7d peak ~2.2Gi working set
+      resources:
+        requests:
+          cpu: 100m
+          memory: 2Gi
+        limits:
+          memory: 3Gi
       storageSpec:
         volumeClaimTemplate:
           spec:
@@ -322,10 +335,36 @@ loki:
 
   backend:
     replicas: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
   read:
     replicas: 1
+    resources:
+      requests:
+        cpu: 25m
+        memory: 256Mi
+      limits:
+        memory: 768Mi
   write:
     replicas: 1
+    resources:
+      requests:
+        cpu: 25m
+        memory: 256Mi
+      limits:
+        memory: 768Mi
+
+  # chart defaults reserve 8Gi + 1Gi and 1 CPU for caches that use <600Mi and ~1m
+  chunksCache:
+    allocatedMemory: 1024
+    allocatedCPU: 50m
+  resultsCache:
+    allocatedMemory: 128
+    allocatedCPU: 50m
 
   monitoring:
     serviceMonitor:
@@ -352,6 +391,13 @@ tempo:
       mountPath: /etc/ssl/certs/trust-bundle.pem
       subPath: trust-bundle.pem
       readOnly: true
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 384Mi
+      limits:
+        memory: 1Gi
 
     multitenancyEnabled: false
     storage:
@@ -385,6 +431,13 @@ alloy:
           name: ca-trust-bundle
 
   alloy:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 256Mi
+      limits:
+        memory: 768Mi
+
     mounts:
       extra:
       - name: ca-trust-bundle

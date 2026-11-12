@@ -70,8 +70,8 @@ spec:
           --destination=ghcr.io/raiyajin/lol-draft:{{workflow.parameters.sha}} \
           --destination=ghcr.io/raiyajin/lol-draft:latest
       resources:
-        # Fits the 2-CPU / 8Gi workers next to their usual load; the release Rust build peaks around 2-3Gi
-        requests: {cpu: "1", memory: 3Gi}
+        # Release build peaked at ~860m / 1.7Gi over 7d; the 5Gi limit covers bigger builds
+        requests: {cpu: 500m, memory: 2Gi}
         limits: {memory: 5Gi}
 
   # GitOps deploy: Argo CD syncs homelab-argo-apps after this commit

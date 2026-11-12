@@ -5,6 +5,12 @@ cilium:
       clusterPoolIPv4PodCIDRList: ["10.244.0.0/16"]
 
   kubeProxyReplacement: true
+
+  # agent peaks ~130m / 430Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 384Mi
   k8sServiceHost: localhost
   k8sServicePort: 7445
   

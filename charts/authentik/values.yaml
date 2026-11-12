@@ -51,7 +51,7 @@ authentik:
         enabled: true
     resources:
       requests:
-        cpu: 50m
+        cpu: 150m
         memory: 512Mi
       limits:
         memory: 1Gi
@@ -69,6 +69,13 @@ authentik:
         memory: 1Gi
 
 postgres:
+  # OOMKilled at the 512Mi default, peaks ~400Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 768Mi
   externalSecret:
     enabled: true
     data:

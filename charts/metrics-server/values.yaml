@@ -9,7 +9,6 @@ metrics-server:
       cpu: 50m
       memory: 50Mi
     limits:
-      cpu: 50m
       memory: 50Mi
 
   # As worker nodes can't communicate to control plane node kubelet API

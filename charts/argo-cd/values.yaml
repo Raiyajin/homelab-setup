@@ -105,12 +105,13 @@ argo-cd:
   controller:
     metrics: *metrics
     resources:
+      # OOMKilled at 1Gi, peaks ~2Gi
       limits:
         cpu: 1
-        memory: 1Gi
+        memory: 2Gi
       requests:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 300m
+        memory: 768Mi
 
   redis:
     exporter:
@@ -135,15 +136,13 @@ argo-cd:
         memory: 32Mi
 
   repoServer:
+    metrics: *metrics
     resources:
       limits:
-        cpu: 2000m
-        memory: 2Gi
-      requests:
-        cpu: 1000m
         memory: 1Gi
-  repoServer:
-    metrics: *metrics
+      requests:
+        cpu: 100m
+        memory: 512Mi
   applicationSet:
     metrics: *metrics
   notifications:
