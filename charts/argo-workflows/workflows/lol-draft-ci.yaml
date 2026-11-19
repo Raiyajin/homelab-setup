@@ -26,6 +26,8 @@ spec:
         template: backend
       - name: frontend
         template: frontend
+      - name: companion
+        template: companion
 
   - name: report
     steps:
@@ -62,6 +64,31 @@ spec:
       resources:
         requests: {cpu: "1", memory: 2Gi}
         limits: {memory: 4Gi}
+
+  # The Pickban companion's logic (companion/ in lol-draft) without its Windows window (`ui` feature)
+  - name: companion
+    inputs:
+      artifacts:
+      - name: source
+        path: /src
+        git:
+          repo: https://github.com/Raiyajin/lol-draft.git
+          revision: "{{workflow.parameters.sha}}"
+          usernameSecret: {name: github-pat, key: username}
+          passwordSecret: {name: github-pat, key: token}
+    container:
+      image: rust:1-slim-bookworm
+      workingDir: /src/companion
+      command: [sh, -euc]
+      args:
+      - |
+        rustup component add clippy rustfmt
+        cargo fmt --check
+        cargo clippy --no-default-features --all-targets --locked -- -D warnings
+        cargo test --no-default-features --locked
+      resources:
+        requests: {cpu: "1", memory: 1Gi}
+        limits: {memory: 3Gi}
 
   - name: frontend
     inputs:
