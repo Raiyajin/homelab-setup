@@ -77,7 +77,9 @@ spec:
         api=https://api.github.com/repos/Raiyajin/lol-draft
         id=$(curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$api/releases" \
           -d "{\"tag_name\":\"companion-$short\",\"target_commitish\":\"$SHA\",\"name\":\"Pickban companion $short\"}" \
-          | sed -n 's/^  "id": \([0-9]*\),$/\1/p' | head -1)
+          | grep -o '"id": *[0-9]*' | head -1 | grep -o '[0-9]*$')
+        # the API answers compact JSON; the release's own id is its first "id"
+        [ -n "$id" ] || { echo "no release id"; exit 1; }
         curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" \
           --data-binary @target/x86_64-pc-windows-msvc/release/pickban-companion.exe \
           "https://uploads.github.com/repos/Raiyajin/lol-draft/releases/$id/assets?name=pickban-companion.exe" >/dev/null
