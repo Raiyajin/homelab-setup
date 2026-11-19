@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
 # Pickban companion (Windows app, lol-draft repo companion/): logs in through the browser (Discord) with PKCE and a
-# loopback redirect, then calls pickban.lmo-software.fr with `Authorization: Bearer`. The lol-draft proxy provider
-# trusts this provider's tokens (jwt_federation_providers in lol-draft.yaml). Public client: no secret.
+# loopback redirect, then calls pickban.lmo-software.fr with `Authorization: Bearer`. The lol-draft proxy outpost
+# introspects that token; Authentik finds it only when the token's provider (this one) lists the asking provider in
+# jwt_federation_providers (providers/oauth2/views/introspection.py). Public client: no secret.
 version: 1
 metadata:
   name: homelab pickban companion
@@ -11,6 +12,12 @@ entries:
     attrs:
       identifiers:
         name: homelab discord
+      required: true
+  # the lol-draft proxy provider, listed below
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: homelab lol-draft
       required: true
 
   - model: authentik_providers_oauth2.oauth2provider
@@ -38,6 +45,9 @@ entries:
       access_token_validity: minutes=10
       # losing the Discord role takes effect at the next refresh after the policy check
       refresh_token_validity: days=30
+      # the proxy outpost in front of pickban.lmo-software.fr may introspect this provider's tokens
+      jwt_federation_providers:
+        - !Find [authentik_providers_proxy.proxyprovider, [name, lol-draft]]
 
   - model: authentik_core.application
     id: pickban-companion-app

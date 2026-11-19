@@ -12,12 +12,6 @@ entries:
       identifiers:
         name: homelab discord
       required: true
-  # the companion's OAuth2 provider, trusted below
-  - model: authentik_blueprints.metaapplyblueprint
-    attrs:
-      identifiers:
-        name: homelab pickban companion
-      required: true
 
   - model: authentik_providers_proxy.proxyprovider
     id: lol-draft-provider
@@ -32,10 +26,9 @@ entries:
       internal_host: http://lol-draft.lol-draft.svc:8080
       # the proxy session: losing the Discord role takes effect within a day
       access_token_validity: hours=24
-      # `Authorization: Bearer <companion token>` passes the outpost (the user must still be allowed in this app)
+      # `Authorization: Bearer <companion token>` passes the outpost; the companion's provider lists this one in its
+      # jwt_federation_providers (pickban-companion.yaml), which is what token introspection checks
       intercept_header_auth: true
-      jwt_federation_providers:
-        - !Find [authentik_providers_oauth2.oauth2provider, [name, pickban-companion]]
 
   - model: authentik_core.application
     id: lol-draft-app
