@@ -25,11 +25,8 @@ spec:
         templateRef: {name: lol-draft-ci, template: companion}
     - - name: image
         template: image
-    # beside the deploy: a failed Windows build doesn't hold the website back
     - - name: deploy
         template: deploy
-      - name: companion
-        template: companion-exe
 
   - name: report
     steps:
@@ -44,49 +41,6 @@ spec:
 
   # kaniko: no Docker daemon and no privileges, so it runs under the default `baseline` Pod Security
   # (rootless buildkit would need seccomp Unconfined). martizih/kaniko is the maintained fork.
-  # The companion's Windows exe as a GitHub release asset, only when companion/ changed in this push
-  - name: companion-exe
-    inputs:
-      artifacts:
-      - name: source
-        path: /src
-        git:
-          repo: https://github.com/Raiyajin/lol-draft.git
-          revision: "{{workflow.parameters.sha}}"
-          usernameSecret: {name: github-pat, key: username}
-          passwordSecret: {name: github-pat, key: token}
-    container:
-      # rust, clang, lld and the MSVC CRT/SDK (xwin)
-      image: messense/cargo-xwin:latest
-      env:
-      - name: GITHUB_TOKEN
-        valueFrom:
-          secretKeyRef: {name: github-pat, key: token}
-      - name: SHA
-        value: "{{workflow.parameters.sha}}"
-      workingDir: /src
-      command: [sh, -euc]
-      args:
-      - |
-        command -v git >/dev/null && command -v curl >/dev/null || (apt-get update -qq && apt-get install -yqq git curl)
-        git config --global --add safe.directory /src
-        if git diff --quiet HEAD~1 HEAD -- companion; then echo "companion unchanged"; exit 0; fi
-        cd companion
-        cargo xwin build --release --locked --target x86_64-pc-windows-msvc
-        short=$(echo "$SHA" | cut -c1-7)
-        api=https://api.github.com/repos/Raiyajin/lol-draft
-        id=$(curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$api/releases" \
-          -d "{\"tag_name\":\"companion-$short\",\"target_commitish\":\"$SHA\",\"name\":\"Pickban companion $short\"}" \
-          | grep -o '"id": *[0-9]*' | head -1 | grep -o '[0-9]*$')
-        # the API answers compact JSON; the release's own id is its first "id"
-        [ -n "$id" ] || { echo "no release id"; exit 1; }
-        curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" \
-          --data-binary @target/x86_64-pc-windows-msvc/release/pickban-companion.exe \
-          "https://uploads.github.com/repos/Raiyajin/lol-draft/releases/$id/assets?name=pickban-companion.exe" >/dev/null
-      resources:
-        requests: {cpu: "2", memory: 4Gi}
-        limits: {memory: 8Gi}
-
   - name: image
     inputs:
       artifacts:
