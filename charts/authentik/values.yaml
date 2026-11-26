@@ -69,10 +69,6 @@ authentik:
         memory: 1Gi
 
 postgres:
-  # Pinned so a Postgres major comes as its own Renovate PR, it needs a dump/restore (data dir is per major)
-  image:
-    # renovate: datasource=docker depName=postgres
-    tag: "18.6"
   # OOMKilled at the 512Mi default, peaks ~400Mi
   resources:
     requests:
