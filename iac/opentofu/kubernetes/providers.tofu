@@ -14,7 +14,7 @@ terraform {
     }
     kubernetes = {
       source  = "kubernetes"
-      version = "~> 3.5.0"
+      version = "~> 3.6.0"
     }
     vault = {
       source  = "vault"
